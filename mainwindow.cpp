@@ -37,7 +37,8 @@ MainWindow::MainWindow(QWidget *parent) :
     measurePressureValue = 0.4;
     motorPosition = MOTOR_INIT_PCT * MAX_STROKE / 100; // units of mm
     cameraImagePtr = NULL;
-    scene = NULL;
+    scene = new QGraphicsScene;
+    item = new QGraphicsPixmapItem;
 
     // setup UI
     ui->setupUi(this);
@@ -52,10 +53,12 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->measureButton->setEnabled(false);
     ui->OpenCameraButton->setEnabled(false);
     ui->horizontalSlider->setValue((int) motorPosition);
+    ui->cameraImageDisplay->setScene(scene);
 
     // set up timer to update GUI
     timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT(updateCameraImage()));
+    timer->start(1000);
 
     // start motorController, arduinoController, and cameraController
     mc = new MotorController();
@@ -85,7 +88,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(thread_cc, SIGNAL(started()), this, SLOT(cameraReadySlot()));
     connect(cc, SIGNAL(cameraInitialized()), this, SLOT(cameraFinishedInit()));
-    connect(this, SIGNAL(startCameraDisplay(QImage*)), cc, SLOT(displayVideo(QImage*)));
+    connect(this, SIGNAL(startCameraDisplay(QImage**)), cc, SLOT(startVideo(QImage**)));
     connect(cc, SIGNAL(cameraFinished()), this, SLOT(cameraFinishedClose()));
     connect(cc, SIGNAL(destroyed()), thread_cc, SLOT(quit()));
     connect(thread_cc, SIGNAL(finished()), thread_cc, SLOT(deleteLater()));
@@ -125,10 +128,14 @@ MainWindow::~MainWindow()
         videoStartable = 0;
     }
 
+    timer->stop();
+
     delete ac;
     delete mc;
     delete cc;
     delete timer;
+    delete scene;
+    delete item;
     delete ui;
 
 }
@@ -231,13 +238,6 @@ void MainWindow::pressureUpdatedSlot(){
     ui->actualPressure->setText(data_string);
 }
 
-
-// redraw camera image in GUI
-void MainWindow::updateCameraImage(){
-    QGraphicsPixmapItem item(QPixmap::fromImage(*cameraImagePtr));
-    scene->addItem(&item);
-    ui->cameraImageDisplay->setScene(scene);
-}
 
 // on_valveButton_clicked: write high or low value to valve pin
 void MainWindow::on_valveButton_clicked()
@@ -464,10 +464,30 @@ void MainWindow::on_measureButton_clicked()
     emit goToPressure(measurePressureValue, 1);
 }
 
+// redraw camera image in GUI
+void MainWindow::updateCameraImage(){
+
+    qDebug() << "attempting to display camera image";
+    if (cameraOpen){
+
+
+        //item->setPixmap(QPixmap::fromImage(*cameraImagePtr));
+        qDebug() << "cameraImagePtr: " << cameraImagePtr;
+        qDebug() << "item: " << item;
+        qDebug() << "scene: " << scene;
+
+        scene->addPixmap(QPixmap::fromImage(*cameraImagePtr));
+        //scene->clear();
+        //scene->addItem(item);
+        //ui->cameraImageDisplay->setScene(scene);
+        ui->cameraImageDisplay->repaint();
+    }
+
+}
 
 void MainWindow::cameraFinishedInit(){
     cameraOpen = 1;
-    emit startCameraDisplay(cameraImagePtr);
+    emit startCameraDisplay(&cameraImagePtr);
 }
 
 
@@ -484,4 +504,5 @@ void MainWindow::on_OpenCameraButton_clicked()
     if (videoStartable){
         cc->initCamera();
     }
+    ui->OpenCameraButton->setEnabled(false);
 }

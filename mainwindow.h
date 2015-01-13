@@ -44,13 +44,15 @@ class MainWindow : public QMainWindow
         QImage *cameraImagePtr;
         QTimer *timer;
         QGraphicsScene *scene;
+        QGraphicsPixmapItem *item;
+
 
     signals:
         void setValve(int value);
         void setVent(int value);
         void goToPressure(double desiredPressure, int flag);
         void setMotorPosition(int value); // value is percentage of max stroke
-        void startCameraDisplay(QImage *imgPtr);
+        void startCameraDisplay(QImage **imgPtr);
 
     public slots:
         void motorClosedSlot();

@@ -4,8 +4,9 @@
 #include <QObject>
 #include <QImage>
 #include <QString>
-#include "opencv/cv.h"
-#include "opencv/highgui.h"
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
+#include <QTimer>
 
 class CameraController : public QObject
 {
@@ -15,14 +16,14 @@ public:
     void closeCamera();
     QImage *cameraImage;
     int videoOn;
+    cv::Mat image;
     void initCamera();
     ~CameraController();
 
 private:
-    IplImage *image;
     int windowOpen;
     QString windowName;
-
+    QTimer *timer;
 
 signals:
     void cameraStarted();
@@ -30,7 +31,10 @@ signals:
     void cameraFinished();
 
 public slots:
-    void displayVideo(QImage *cameraImgPtr);
+    void startVideo(QImage **cameraImgPtr);
+
+private slots:
+    void updateVideo();
 
 };
 
