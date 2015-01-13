@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1140</width>
+    <height>723</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <widget class="QSlider" name="horizontalSlider">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>128</y>
+      <width>331</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="maximum">
+     <number>50</number>
+    </property>
+    <property name="value">
+     <number>40</number>
+    </property>
+    <property name="orientation">
+     <enum>Qt::Horizontal</enum>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ActuatorPositionHeading">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>100</y>
+      <width>261</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Set Actuator Position</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="PressureLabel">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>350</y>
+      <width>141</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Actual Pressure:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="actualPressure">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>370</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="stopButton">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>910</x>
+      <y>570</y>
+      <width>151</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>STOP</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="startButton">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>570</y>
+      <width>151</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>START</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="zeroPressure">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>910</x>
+      <y>490</y>
+      <width>151</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>ZERO</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="valveButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>700</x>
+      <y>200</y>
+      <width>151</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Open Valve</string>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="BoardStatusHeading">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>30</y>
+      <width>141</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Firgelli Board Port Status:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="BoardStatusLabel">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>60</y>
+      <width>131</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ArduinoStatusHeading">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>30</y>
+      <width>141</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Arduino Port Status:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ArduinoStatusLabel">
+    <property name="geometry">
+     <rect>
+      <x>890</x>
+      <y>60</y>
+      <width>141</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="ventButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>910</x>
+      <y>200</y>
+      <width>151</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>VENT</string>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="DesiredPressureLabel">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>410</y>
+      <width>141</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Desired  Pressure (psi):</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="balanceButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>910</x>
+      <y>350</y>
+      <width>151</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>2. Balance</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="measureButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>910</x>
+      <y>420</y>
+      <width>151</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>3. Measure</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="MeasurementPressureLabel">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>480</y>
+      <width>151</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Measurement  Pressure (psi):</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="initializeButton">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>910</x>
+      <y>280</y>
+      <width>151</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>1. Initialize</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="statusLabel">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>300</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Stopped</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="statusHeader">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>280</y>
+      <width>141</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>System status:</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="balancePressureDouble">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>440</y>
+      <width>129</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="mouseTracking">
+     <bool>false</bool>
+    </property>
+    <property name="prefix">
+     <string/>
+    </property>
+    <property name="decimals">
+     <number>3</number>
+    </property>
+    <property name="minimum">
+     <double>-0.100000000000000</double>
+    </property>
+    <property name="maximum">
+     <double>0.400000000000000</double>
+    </property>
+    <property name="singleStep">
+     <double>0.005000000000000</double>
+    </property>
+    <property name="value">
+     <double>-0.035000000000000</double>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="measurePressureDouble">
+    <property name="geometry">
+     <rect>
+      <x>710</x>
+      <y>510</y>
+      <width>129</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="mouseTracking">
+     <bool>false</bool>
+    </property>
+    <property name="prefix">
+     <string/>
+    </property>
+    <property name="decimals">
+     <number>3</number>
+    </property>
+    <property name="minimum">
+     <double>-0.100000000000000</double>
+    </property>
+    <property name="maximum">
+     <double>0.400000000000000</double>
+    </property>
+    <property name="singleStep">
+     <double>0.005000000000000</double>
+    </property>
+    <property name="value">
+     <double>0.400000000000000</double>
+    </property>
+   </widget>
+   <widget class="QGraphicsView" name="cameraImageDisplay">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>30</y>
+      <width>581</width>
+      <height>441</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="OpenCameraButton">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>510</y>
+      <width>151</width>
+      <height>71</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Display Video</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1140</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

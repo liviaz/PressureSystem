@@ -1,0 +1,25 @@
+<html>
+<body>
+<pre>
+<h1>ﾋﾞﾙﾄﾞのﾛｸﾞ</h1>
+<h3>
+--------------------構成: mpusbapi - Win32 Release--------------------
+</h3>
+<h3>ｺﾏﾝﾄﾞ ﾗｲﾝ</h3>
+一時ﾌｧｲﾙ "C:\Users\YTS\AppData\Local\Temp\RSP70AE.tmp" を作成し、次の内容を記録します
+[
+kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib setupapi.lib /nologo /dll /incremental:no /pdb:"Release/mpusbapi.pdb" /machine:I386 /out:"Release/mpusbapi.dll" /implib:"Release/mpusbapi.lib" 
+.\Release\mpusbapi.obj
+]
+ｺﾏﾝﾄﾞ ﾗｲﾝ "link.exe @C:\Users\YTS\AppData\Local\Temp\RSP70AE.tmp" の作成中
+<h3>ｱｳﾄﾌﾟｯﾄ ｳｨﾝﾄﾞｳ</h3>
+ﾘﾝｸ中...
+   ﾗｲﾌﾞﾗﾘ Release/mpusbapi.lib とｵﾌﾞｼﾞｪｸﾄ Release/mpusbapi.exp を作成中
+
+
+
+<h3>結果</h3>
+mpusbapi.dll - ｴﾗｰ 0、警告 0
+</pre>
+</body>
+</html>
