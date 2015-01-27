@@ -15,7 +15,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = PressureSystem
 TEMPLATE = app
 
-INCLUDEPATH += "C:/opencv/install/include/"
+INCLUDEPATH += C:/Users/Livia/Desktop/OpenCV/v2410/build/include
 INCLUDEPATH += "C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSystem/FirgelliMotor"
 INCLUDEPATH += "C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSystem/Camera"
 
@@ -23,15 +23,22 @@ include("C:/Users/Livia/Desktop/IVF/Code/sample code/qextserialport-1.2rc/qextse
 
 QMAKE_CXXFLAGS += -Wall
 
-LIBS += -LC:/opencv/bin \
-    -llibopencv_core2410 \
-    -llibopencv_highgui2410
+LIBS += -LC:/Users/Livia/Desktop/OpenCV/v2410/build/x86/vc10/lib \
+    -lopencv_core2410d \
+    -lopencv_highgui2410d \
+    -lopencv_imgproc2410d
+
+LIBS += -LC:/Users/Livia/Desktop/OpenCV/v2410/build/x86/vc10/bin \
+    -lopencv_core2410d \
+    -lopencv_highgui2410d \
+    -lopencv_imgproc2410d
+
 
 LIBS += -L"C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSystem/FirgelliMotor" \
     -lmpusbapi
 
-#LIBS += -L"C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSystem/Camera" \
-#    -luc480
+LIBS += -L"C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSystem/Camera" \
+    -luc480
 
 
 SOURCES += main.cpp \

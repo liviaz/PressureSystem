@@ -42,9 +42,9 @@ class MainWindow : public QMainWindow
         int motorStartable;
         int videoStartable;
         QImage *cameraImagePtr;
-        QTimer *timer;
-        QGraphicsScene *scene;
-        QGraphicsPixmapItem *item;
+        //QTimer *timer;
+        //QGraphicsScene *scene;
+        //QGraphicsPixmapItem *item;
 
 
     signals:
@@ -78,9 +78,10 @@ class MainWindow : public QMainWindow
         void on_measureButton_clicked();
         void on_balancePressureDouble_valueChanged(double arg1);
         void on_measurePressureDouble_valueChanged(double arg1);
-        void updateCameraImage();
+        //void updateCameraImage();
         void on_OpenCameraButton_clicked();
         void cameraReadySlot();
+        void on_videoCameraOpenButton_clicked();
 };
 
 #endif // MAINWINDOW_H

@@ -17,7 +17,9 @@ public:
     QImage *cameraImage;
     int videoOn;
     cv::Mat image;
+    //cv::VideoCapture *cap;
     void initCamera();
+    void initVideoCamera(int camera_id);
     ~CameraController();
 
 private:

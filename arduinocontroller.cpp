@@ -20,11 +20,14 @@ ArduinoController::ArduinoController(QObject *parent) :
     pressureOffset = START_ZERO_PRESSURE;
     sensorVoltage = -1;
     serialData.clear();
+    port = NULL;
 }
 
 // destructor
 ArduinoController::~ArduinoController(){
-    delete port;
+    if (port){
+        delete port;
+    }
 }
 
 // signal that the port was closed successfully

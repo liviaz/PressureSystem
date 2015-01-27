@@ -1,7 +1,9 @@
 #include "cameracontroller.h"
 #include <QDebug>
+#include <QThread>
 #include "QLibrary"
 #include <iostream>
+#include "Camera/uc480.h"
 
 using namespace cv;
 
@@ -28,22 +30,22 @@ CameraController::CameraController(QObject *parent) :
 CameraController::~CameraController(){
 
     videoOn = 0;
-    if (windowOpen){
-        //cvReleaseImage(&image);
+    if (cvGetWindowHandle(windowName.toStdString().c_str()) != NULL){
         cvDestroyWindow(windowName.toStdString().c_str());
-        windowOpen = 0;
     }
 
-
+    //timer->stop();
+    //delete timer;
     emit cameraFinished();
 }
 
 void CameraController::closeCamera(){
 
     videoOn = 0;
-    if (windowOpen){
+    windowOpen = 0;
+    if (cvGetWindowHandle(windowName.toStdString().c_str()) != NULL){
         cvDestroyWindow(windowName.toStdString().c_str());
-        windowOpen = 0;
+
     }
 
     //timer->stop();
@@ -57,24 +59,50 @@ void CameraController::initCamera(){
 
     qDebug() << "about to initialize camera!";
     QString filePath = "C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSystem/crocoduck.jpg";
-
     image = imread(filePath.toStdString().c_str(), CV_LOAD_IMAGE_COLOR);
-    qDebug() << "image read in";
 
     //if (image == NULL){
     if (!(image.data)){
         qDebug() << "could not open image";
     } else {
-        qDebug() << "displaying image: " ;
         cvNamedWindow(windowName.toStdString().c_str(), CV_WINDOW_AUTOSIZE);
-        moveWindow(windowName.toStdString().c_str(), 10, 10);
+        //moveWindow(windowName.toStdString().c_str(), 50, 50);
         imshow(windowName.toStdString().c_str(), image);
         windowOpen = 1;
         cameraImage = new QImage(image.data, image.cols, image.rows, QImage::Format_RGB888);
     }
 
+
+
     emit cameraInitialized();
 }
+
+
+
+void CameraController::initVideoCamera(int camera_id){
+
+    QString videoPath = "C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSystem/E1.avi";
+
+    INT nNumCam;
+    if (is_GetNumberOfCameras(&nNumCam) == IS_SUCCESS) {
+        qDebug() << "num cameras: " << nNumCam;
+    }
+
+
+
+
+//        VideoCapture *cap = new VideoCapture;
+//        cap->open(i);// = new VideoCapture(camera_id);
+
+//        if (cap->isOpened()){
+//            qDebug() << "Video opened!";
+//        } else {
+//            qDebug() << "Could not open video";
+//        }
+
+
+}
+
 
 
 // point QImage from MainWindow to image.data
