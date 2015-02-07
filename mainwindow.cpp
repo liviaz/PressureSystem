@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent) :
     portOpen = 0;
     motorOpen = 0;
     cameraOpen = 0;
+    videoOpen = 0;
     pressure = 0;
     arduinoStartable = 0;
     motorStartable = 0;
@@ -37,6 +38,7 @@ MainWindow::MainWindow(QWidget *parent) :
     measurePressureValue = 0.4;
     motorPosition = MOTOR_INIT_PCT * MAX_STROKE / 100; // units of mm
     cameraImagePtr = NULL;
+    cameraClosable = 0;
     //scene = new QGraphicsScene;
     //item = new QGraphicsPixmapItem;
 
@@ -51,7 +53,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actualPressure->setText("+0.000 psi");
     ui->balanceButton->setEnabled(false);
     ui->measureButton->setEnabled(false);
-    ui->OpenCameraButton->setEnabled(false);
+    ui->StartVideoButton->setEnabled(false);
+    ui->StartVideoButton->setText("Start Video");
     ui->horizontalSlider->setValue((int) motorPosition);
     //ui->cameraImageDisplay->setScene(scene);
 
@@ -86,10 +89,14 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(mc, SIGNAL(destroyed()), thread_mc, SLOT(quit()));
     connect(thread_mc, SIGNAL(finished()), thread_mc, SLOT(deleteLater()));
 
+    // thread connections for camera
     connect(thread_cc, SIGNAL(started()), this, SLOT(cameraReadySlot()));
-    connect(cc, SIGNAL(cameraInitialized()), this, SLOT(cameraFinishedInit()));
+    connect(this, SIGNAL(initCamera()), cc, SLOT(initCamera())); // tell camera to initialize
+    connect(cc, SIGNAL(cameraInitialized()), this, SLOT(cameraFinishedInit())); // wait until camera has finished init
     connect(this, SIGNAL(startCameraDisplay(QImage**)), cc, SLOT(startVideo(QImage**)));
-    connect(cc, SIGNAL(cameraFinished()), this, SLOT(cameraFinishedClose()));
+    connect(this, SIGNAL(stopCameraDisplay()), cc, SLOT(stopVideo()));
+    connect(this, SIGNAL(closeCamera()), cc, SLOT(closeCamera())); // tell camera to close
+    connect(cc, SIGNAL(cameraClosed()), this, SLOT(cameraFinishedClose())); // wait until camera is finished closing
     connect(cc, SIGNAL(destroyed()), thread_cc, SLOT(quit()));
     connect(thread_cc, SIGNAL(finished()), thread_cc, SLOT(deleteLater()));
 
@@ -124,8 +131,18 @@ MainWindow::~MainWindow()
     }
 
     if (cameraOpen){
-        cc->closeCamera();
-        videoStartable = 0;
+        emit stopCameraDisplay();
+    }
+
+    emit closeCamera();
+
+    // wait for CameraController to be cleaned up before deleting it
+    while (true){
+       QCoreApplication::processEvents();
+       if (cameraClosable){
+           break;
+       }
+       QThread::msleep(100);
     }
 
     //timer->stop();
@@ -137,6 +154,8 @@ MainWindow::~MainWindow()
 //    delete scene;
 //    delete item;
     delete ui;
+
+
 
 }
 
@@ -153,13 +172,12 @@ void MainWindow::on_stopButton_clicked()
         mc->closePort();
     }
 
-    if (cameraOpen){
-        cc->closeCamera();
-        videoStartable = 0;
+    if (videoOpen){
+        emit stopCameraDisplay();
+        videoOpen = 0;
     }
 
     ui->statusLabel->setText("Stopped");
-    ui->OpenCameraButton->setEnabled(false);
 }
 
 
@@ -177,9 +195,9 @@ void MainWindow::on_startButton_clicked()
         }
 
         ui->statusLabel->setText("Started");
-        ui->OpenCameraButton->setEnabled(true);
     }
 }
+
 
 
 // slot to signal arduino port closed
@@ -440,12 +458,10 @@ void MainWindow::balanceFinished(int successful, int flag){
 }
 
 
-
 // update the motor position
 void MainWindow::updateMotorPosition(double value){
     motorPosition = value;
 }
-
 
 
 /*
@@ -463,6 +479,8 @@ void MainWindow::on_measureButton_clicked()
     // 1. achieve desired pressure
     emit goToPressure(measurePressureValue, 1);
 }
+
+
 
 // redraw camera image in GUI
 //void MainWindow::updateCameraImage(){
@@ -485,31 +503,56 @@ void MainWindow::on_measureButton_clicked()
 
 //}
 
+
+// signifies that camera is done initializing
 void MainWindow::cameraFinishedInit(){
     cameraOpen = 1;
-    emit startCameraDisplay(&cameraImagePtr);
+    ui->StartVideoButton->setEnabled(true);
 }
 
-
+// signifies that camera is done closing and mainwindow can be deleted
 void MainWindow::cameraFinishedClose(){
+    cameraClosable = 1;
     cameraOpen = 0;
 }
 
+
+// wait for camera thread to start
 void MainWindow::cameraReadySlot(){
     videoStartable = 1;
 }
 
-void MainWindow::on_OpenCameraButton_clicked()
+
+// start video
+void MainWindow::on_StartVideoButton_clicked()
 {
-    if (videoStartable){
-        cc->initCamera();
+    // either start or stop video depending on state at time of click
+    if (videoStartable && cameraOpen && !videoOpen){
+        videoOpen = 1;
+        emit startCameraDisplay(&cameraImagePtr);
+        ui->StartVideoButton->setText("Stop Video");
+
+    } else {
+        videoOpen = 0;
+        emit stopCameraDisplay();
+        ui->StartVideoButton->setText("Start Video");
+
     }
-    ui->OpenCameraButton->setEnabled(false);
 }
 
-void MainWindow::on_videoCameraOpenButton_clicked()
+
+// if camera thread is running, initialize camera
+void MainWindow::on_InitCameraButton_clicked()
 {
+
     if (videoStartable){
-        cc->initVideoCamera(ui->cameraIdSpinBox->value());
+        emit initCamera();
+        cameraClosable = 0;
     }
 }
+
+
+
+
+
+

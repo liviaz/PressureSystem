@@ -13,27 +13,26 @@ class CameraController : public QObject
     Q_OBJECT
 public:
     explicit CameraController(QObject *parent = 0);
-    void closeCamera();
     QImage *cameraImage;
     int videoOn;
-    cv::Mat image;
-    //cv::VideoCapture *cap;
-    void initCamera();
-    void initVideoCamera(int camera_id);
+    void setCameraParams(QString param, int value);
     ~CameraController();
 
 private:
     int windowOpen;
     QString windowName;
     QTimer *timer;
+    void initializeCameraParams();
 
 signals:
-    void cameraStarted();
     void cameraInitialized();
-    void cameraFinished();
+    void cameraClosed();
 
 public slots:
+    void initCamera();
     void startVideo(QImage **cameraImgPtr);
+    void stopVideo();
+    void closeCamera();
 
 private slots:
     void updateVideo();

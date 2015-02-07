@@ -33,6 +33,8 @@ class MainWindow : public QMainWindow
         int portOpen;
         int motorOpen;
         int cameraOpen;
+        int videoOpen;
+        int cameraClosable;
         double measurePressureValue;
         double balancePressureValue;
         MotorController *mc;
@@ -53,6 +55,9 @@ class MainWindow : public QMainWindow
         void goToPressure(double desiredPressure, int flag);
         void setMotorPosition(int value); // value is percentage of max stroke
         void startCameraDisplay(QImage **imgPtr);
+        void stopCameraDisplay();
+        void initCamera();
+        void closeCamera();
 
     public slots:
         void motorClosedSlot();
@@ -79,9 +84,9 @@ class MainWindow : public QMainWindow
         void on_balancePressureDouble_valueChanged(double arg1);
         void on_measurePressureDouble_valueChanged(double arg1);
         //void updateCameraImage();
-        void on_OpenCameraButton_clicked();
+        void on_StartVideoButton_clicked();
         void cameraReadySlot();
-        void on_videoCameraOpenButton_clicked();
+        void on_InitCameraButton_clicked();
 };
 
 #endif // MAINWINDOW_H
