@@ -9,8 +9,10 @@
 #include <QThread>
 #include <QtGlobal>
 #include <QTimer>
-#include <QGraphicsPixmapItem>
 #include <QImage>
+#include <QGraphicsScene>
+#include <QPixmap>
+#include <QGraphicsPixmapItem>
 
 #define MAX_STROKE 50
 #define MOTOR_INIT_PCT 70
@@ -39,8 +41,7 @@ MainWindow::MainWindow(QWidget *parent) :
     motorPosition = MOTOR_INIT_PCT * MAX_STROKE / 100; // units of mm
     cameraImagePtr = NULL;
     cameraClosable = 0;
-    //scene = new QGraphicsScene;
-    //item = new QGraphicsPixmapItem;
+    scene = NULL;
 
     // setup UI
     ui->setupUi(this);
@@ -56,12 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->StartVideoButton->setEnabled(false);
     ui->StartVideoButton->setText("Start Video");
     ui->horizontalSlider->setValue((int) motorPosition);
-    //ui->cameraImageDisplay->setScene(scene);
-
-    // set up timer to update GUI
-//    timer = new QTimer(this);
-//    connect(timer, SIGNAL(timeout()), this, SLOT(updateCameraImage()));
-//    timer->start(1000);
+    ui->cameraImageDisplay->setScene(scene);
 
     // start motorController, arduinoController, and cameraController
     mc = new MotorController();
@@ -93,8 +89,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(thread_cc, SIGNAL(started()), this, SLOT(cameraReadySlot()));
     connect(this, SIGNAL(initCamera()), cc, SLOT(initCamera())); // tell camera to initialize
     connect(cc, SIGNAL(cameraInitialized()), this, SLOT(cameraFinishedInit())); // wait until camera has finished init
-    connect(this, SIGNAL(startCameraDisplay(QImage**)), cc, SLOT(startVideo(QImage**)));
+    connect(this, SIGNAL(startCameraDisplay()), cc, SLOT(startVideo()));
     connect(this, SIGNAL(stopCameraDisplay()), cc, SLOT(stopVideo()));
+    connect(cc, SIGNAL(updateImage(QImage*)), this, SLOT(cameraFrameReceived(QImage*)));
     connect(this, SIGNAL(closeCamera()), cc, SLOT(closeCamera())); // tell camera to close
     connect(cc, SIGNAL(cameraClosed()), this, SLOT(cameraFinishedClose())); // wait until camera is finished closing
     connect(cc, SIGNAL(destroyed()), thread_cc, SLOT(quit()));
@@ -145,14 +142,10 @@ MainWindow::~MainWindow()
        QThread::msleep(100);
     }
 
-    //timer->stop();
-
     delete ac;
     delete mc;
     delete cc;
-//    delete timer;
-//    delete scene;
-//    delete item;
+    delete scene;
     delete ui;
 
 
@@ -482,26 +475,27 @@ void MainWindow::on_measureButton_clicked()
 
 
 
-// redraw camera image in GUI
-//void MainWindow::updateCameraImage(){
+// update cameraImagePtr when a new frame is received from the camera
+void MainWindow::cameraFrameReceived(QImage* imgFromCamera){
 
-//    qDebug() << "attempting to display camera image";
-//    if (cameraOpen){
+    cameraImagePtr = imgFromCamera;
 
+    if (cameraOpen){
 
-//        //item->setPixmap(QPixmap::fromImage(*cameraImagePtr));
-//        qDebug() << "cameraImagePtr: " << cameraImagePtr;
-//        qDebug() << "item: " << item;
-//        qDebug() << "scene: " << scene;
+        if (scene != NULL){
+            delete scene;
+        }
 
-//        scene->addPixmap(QPixmap::fromImage(*cameraImagePtr));
-//        //scene->clear();
-//        //scene->addItem(item);
-//        //ui->cameraImageDisplay->setScene(scene);
-//        ui->cameraImageDisplay->repaint();
-//    }
+        scene = new QGraphicsScene(this);
+        scene->addPixmap(QPixmap::fromImage(*cameraImagePtr));
+        scene->setSceneRect(cameraImagePtr->rect());
+        ui->cameraImageDisplay->setScene(scene);
+        ui->cameraImageDisplay->fitInView(scene->itemsBoundingRect(),
+                                          Qt::KeepAspectRatio);
+        ui->cameraImageDisplay->repaint();
+    }
+}
 
-//}
 
 
 // signifies that camera is done initializing
@@ -529,7 +523,7 @@ void MainWindow::on_StartVideoButton_clicked()
     // either start or stop video depending on state at time of click
     if (videoStartable && cameraOpen && !videoOpen){
         videoOpen = 1;
-        emit startCameraDisplay(&cameraImagePtr);
+        emit startCameraDisplay();
         ui->StartVideoButton->setText("Stop Video");
 
     } else {

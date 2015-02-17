@@ -10,6 +10,7 @@ QT_CONFIG -= no-pkg-config
 CONFIG += link_pkgconfig
 CONFIG += console
 
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = PressureSystem
@@ -38,7 +39,7 @@ LIBS += -L"C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSy
     -lmpusbapi
 
 LIBS += -L"C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSystem/Camera" \
-    -luc480
+    -luc480_64
 
 
 SOURCES += main.cpp \

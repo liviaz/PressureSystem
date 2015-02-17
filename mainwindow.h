@@ -8,6 +8,8 @@
 #include <QMessageBox>
 #include <QByteArray>
 #include <QTimer>
+#include <QGraphicsScene>
+#include <QPixmap>
 
 #include "motorcontroller.h"
 #include "ui_mainwindow.h"
@@ -44,9 +46,7 @@ class MainWindow : public QMainWindow
         int motorStartable;
         int videoStartable;
         QImage *cameraImagePtr;
-        //QTimer *timer;
-        //QGraphicsScene *scene;
-        //QGraphicsPixmapItem *item;
+        QGraphicsScene *scene;
 
 
     signals:
@@ -54,7 +54,7 @@ class MainWindow : public QMainWindow
         void setVent(int value);
         void goToPressure(double desiredPressure, int flag);
         void setMotorPosition(int value); // value is percentage of max stroke
-        void startCameraDisplay(QImage **imgPtr);
+        void startCameraDisplay();
         void stopCameraDisplay();
         void initCamera();
         void closeCamera();
@@ -71,6 +71,7 @@ class MainWindow : public QMainWindow
         void updateMotorPosition(double value);
         void cameraFinishedInit();
         void cameraFinishedClose();
+        void cameraFrameReceived(QImage *imgFromCamera);
 
     private slots:
         void on_stopButton_clicked();
@@ -83,7 +84,6 @@ class MainWindow : public QMainWindow
         void on_measureButton_clicked();
         void on_balancePressureDouble_valueChanged(double arg1);
         void on_measurePressureDouble_valueChanged(double arg1);
-        //void updateCameraImage();
         void on_StartVideoButton_clicked();
         void cameraReadySlot();
         void on_InitCameraButton_clicked();
