@@ -8,23 +8,22 @@
 #include "stdafx.h"
 
 
-
 // constructor
 CameraController::CameraController(QObject *parent) :
     QObject(parent)
 {
-    windowName = "ExampleWindow";
     windowOpen = 0;
     videoOn = 0;
     cameraOn = 0;
     cameraImage = NULL;
     imageData = NULL;
     memoryID = 0;
+    maxPixelClock = 40;
+    maxFrameRate = 25;
 
     // camera model is monochrome
-    nColorMode = IS_CM_MONO8;
-    nBitsPerPixel = 10;
-
+    nColorMode = 0; // RGB32
+    nBitsPerPixel = 32;
 }
 
 // destructor
@@ -33,7 +32,7 @@ CameraController::~CameraController(){
 }
 
 
-// stop
+// stop camera
 void CameraController::closeCamera(){
 
     // if video is on, stop video
@@ -61,19 +60,6 @@ void CameraController::closeCamera(){
     emit cameraClosed();
 }
 
-
-
-void CameraController::stopVideo(){
-
-    if (videoOn){
-        videoOn = 0;
-        if (is_StopLiveVideo(*hCam, IS_WAIT) == IS_SUCCESS){
-            qDebug() << "Stopped video successfully";
-        } else {
-            qDebug() << "Error when stopping video";
-        }
-    }
-}
 
 
 // initialize camera
@@ -122,48 +108,6 @@ void CameraController::initCamera(){
     }
 }
 
-
-
-
-// point QImage from MainWindow to image.data
-void CameraController::startVideo(){
-
-    // is_CaptureVideo
-    if (cameraOn){
-
-        nRet = is_InitEvent(*hCam, hEvent, IS_SET_EVENT_FRAME);
-        nRet = is_EnableEvent(*hCam, IS_SET_EVENT_FRAME);
-        nRet = is_CaptureVideo(*hCam, IS_WAIT);
-        BOOL videoStart;
-
-        if (nRet == IS_SUCCESS){
-            qDebug() << "Successfully started video";
-
-            while (true){
-                is_HasVideoStarted(*hCam, &videoStart);
-                if (videoStart == TRUE){
-                    break;
-                }
-            }
-
-            videoOn = 1;
-        } else {
-            qDebug() << "Error when starting video";
-        }
-
-    } else {
-        qDebug() << "Error: Camera not initialized yet";
-    }
-
-}
-
-
-
-// set camera params based on user input
-void CameraController::setCameraParams(QString param, int value){
-
-
-}
 
 
 // set default camera params after it's initialized
@@ -215,6 +159,131 @@ void CameraController::initializeCameraParams(){
 
 
 
+// start video
+void CameraController::startVideo(){
+
+    // is_CaptureVideo
+    if (cameraOn){
+
+        nRet = is_InitEvent(*hCam, hEvent, IS_SET_EVENT_FRAME);
+        nRet = is_EnableEvent(*hCam, IS_SET_EVENT_FRAME);
+        nRet = is_CaptureVideo(*hCam, IS_WAIT);
+        BOOL videoStart;
+
+        if (nRet == IS_SUCCESS){
+            qDebug() << "Successfully started video";
+
+            while (true){
+                is_HasVideoStarted(*hCam, &videoStart);
+                if (videoStart == TRUE){
+                    break;
+                }
+            }
+
+            videoOn = 1;
+
+//            // set frame rate and exposure time params in GUI
+//            double paramIn = -1;
+//            double paramIn2 = -1;
+//            double paramIn3 = -1;
+//            double *paramsOut = (double *) calloc(6, sizeof(double));
+
+//            is_GetFrameTimeRange(*hCam, &paramIn, &paramIn2, &paramIn3);
+//            double fps_min = 1 / paramIn2;
+//            double fps_max = 1 / paramIn;
+//            memcpy(paramsOut, &fps_min, sizeof(double));
+//            memcpy(paramsOut + 1, &fps_max, sizeof(double));
+//            is_GetFramesPerSecond(*hCam, &paramIn);
+//            memcpy(paramsOut + 2, &paramIn, sizeof(double));
+//            is_Exposure(*hCam, IS_EXPOSURE_CMD_GET_EXPOSURE_RANGE_MIN, &paramIn, sizeof(double));
+//            memcpy(paramsOut + 3, &paramIn, sizeof(double));
+//            is_Exposure(*hCam, IS_EXPOSURE_CMD_GET_EXPOSURE_RANGE_MAX, &paramIn, sizeof(double));
+//            memcpy(paramsOut + 4, &paramIn, sizeof(double));
+//            is_Exposure(*hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, &paramIn, sizeof(double));
+//            memcpy(paramsOut + 5, &paramIn, sizeof(double));
+
+//            emit updateCameraParamsInGui(paramsOut);
+
+        } else {
+            qDebug() << "Error when starting video";
+        }
+
+    } else {
+        qDebug() << "Error: Camera not initialized yet";
+    }
+
+}
+
+
+
+// stop video
+void CameraController::stopVideo(){
+
+    if (videoOn){
+        videoOn = 0;
+        if (is_StopLiveVideo(*hCam, IS_WAIT) == IS_SUCCESS){
+            qDebug() << "Stopped video successfully";
+        } else {
+            qDebug() << "Error when stopping video";
+        }
+    }
+}
+
+
+
+// set camera params based on user input
+void CameraController::setCameraParams(int param, int value){
+
+//    double *paramsOut = (double *) calloc(6, sizeof(double));
+//    double paramIn;
+//    double paramIn2 = -1;
+//    double paramIn3 = -1;
+
+//    /* first, send new param to camera
+//     * then, update camera param ranges in GUI
+//     * paramList is: [frameRateLow, frameRateHigh,
+//     * exposureTimeLow, exposureTimeHigh]
+//     * */
+//    switch (param) {
+//        case CHANGE_EXPOSURE_TIME:
+
+//            // change exposure time
+//            is_Exposure(*hCam, IS_EXPOSURE_CMD_SET_EXPOSURE, &value, sizeof(double));
+
+//            is_GetFramesPerSecond(*hCam, &paramIn);
+//            memcpy(paramsOut + 2, &paramIn, sizeof(double));
+
+//            break;
+//        case CHANGE_FRAME_RATE:
+
+//            // change frame rate
+//            is_SetFrameRate(*hCam, value, &paramIn);
+//            memcpy(paramsOut + 2, &paramIn, sizeof(double));
+
+//            break;
+//    }
+
+
+//    // emit signal to update params in GUI
+//    // also make a timer to occasionally update frame rate
+//    is_GetFrameTimeRange(*hCam, &paramIn, &paramIn2, &paramIn3);
+//    double fps_min = 1 / paramIn2;
+//    double fps_max = 1 / paramIn;
+//    memcpy(paramsOut, &fps_min, sizeof(double));
+//    memcpy(paramsOut + 1, &fps_max, sizeof(double));
+
+//    is_Exposure(*hCam, IS_EXPOSURE_CMD_GET_EXPOSURE_RANGE_MIN, &paramIn, sizeof(double));
+//    memcpy(paramsOut + 3, &paramIn, sizeof(double));
+//    is_Exposure(*hCam, IS_EXPOSURE_CMD_GET_EXPOSURE_RANGE_MAX, &paramIn, sizeof(double));
+//    memcpy(paramsOut + 4, &paramIn, sizeof(double));
+//    is_Exposure(*hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, &paramIn, sizeof(double));
+//    memcpy(paramsOut + 5, &paramIn, sizeof(double));
+
+//    emit updateCameraParamsInGui(paramsOut);
+}
+
+
+
 // handle windows events : new frame is ready
 void CameraController::eventSignaled(HANDLE h) {
 
@@ -226,4 +295,29 @@ void CameraController::eventSignaled(HANDLE h) {
     cameraImage = new QImage(reinterpret_cast<uchar *>(imageData), nX, nY, QImage::Format_RGB32);
     emit updateImage(cameraImage);
 }
+
+
+
+// optimize initial pixel clock and frame rate settings
+void CameraController::optimizeCameraParams(){
+
+    // first get optimal pixel clock
+    //nRet = is_SetOptimalCameraTiming(*hCam, nColorMode, 10000, &maxPixelClock, &maxFrameRate);
+
+    //qDebug() << "max pixel clock: " << maxPixelClock;
+    //qDebug() << "max frame rate: " << maxFrameRate;
+
+    // is_GetFrameTimeRange every time ROI is adjusted
+
+    // Use pixel clock = 40
+
+}
+
+
+
+
+
+
+
+
 

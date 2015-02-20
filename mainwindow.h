@@ -10,11 +10,15 @@
 #include <QTimer>
 #include <QGraphicsScene>
 #include <QPixmap>
+#include <QDateTime>
 
 #include "motorcontroller.h"
 #include "ui_mainwindow.h"
 #include "arduinocontroller.h"
 #include "cameracontroller.h"
+
+#define CHANGE_EXPOSURE_TIME 1
+#define CHANGE_FRAME_RATE 2
 
 namespace Ui {
 class MainWindow;
@@ -47,6 +51,13 @@ class MainWindow : public QMainWindow
         int videoStartable;
         QImage *cameraImagePtr;
         QGraphicsScene *scene;
+        qint64 baseTime;
+        double frameRateMin;
+        double frameRateMax;
+        double frameRateCurr;
+        double exposureTimeMin;
+        double exposureTimeMax;
+        double exposureTimeCurr;
 
 
     signals:
@@ -56,6 +67,7 @@ class MainWindow : public QMainWindow
         void setMotorPosition(int value); // value is percentage of max stroke
         void startCameraDisplay();
         void stopCameraDisplay();
+        void setCameraParams(int param, int value);
         void initCamera();
         void closeCamera();
 
@@ -72,6 +84,7 @@ class MainWindow : public QMainWindow
         void cameraFinishedInit();
         void cameraFinishedClose();
         void cameraFrameReceived(QImage *imgFromCamera);
+        void updateCameraParamsInGui(double *paramList);
 
     private slots:
         void on_stopButton_clicked();
@@ -87,6 +100,9 @@ class MainWindow : public QMainWindow
         void on_StartVideoButton_clicked();
         void cameraReadySlot();
         void on_InitCameraButton_clicked();
+        void on_ExposureTimeSlider_sliderReleased();
+        void on_FrameRateSlider_sliderReleased();
+
 };
 
 #endif // MAINWINDOW_H

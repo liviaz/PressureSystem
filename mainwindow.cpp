@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include <QMainWindow>
 #include <QString>
 #include <QByteArray>
 #include <QDataStream>
@@ -13,10 +14,6 @@
 #include <QGraphicsScene>
 #include <QPixmap>
 #include <QGraphicsPixmapItem>
-
-#define MAX_STROKE 50
-#define MOTOR_INIT_PCT 70
-#define INVALID_PRESSURE -100
 
 // 2 global variables
 double pressure;
@@ -42,6 +39,15 @@ MainWindow::MainWindow(QWidget *parent) :
     cameraImagePtr = NULL;
     cameraClosable = 0;
     scene = NULL;
+    baseTime = QDateTime::currentMSecsSinceEpoch();
+    exposureTimeMin = 0;
+    exposureTimeMax = 100;
+    exposureTimeCurr = 10;
+    ui->ExposureTimeSlider->setValue(10);
+    frameRateMin = 0;
+    frameRateMax = 100;
+    frameRateCurr = 10;
+    ui->FrameRateSlider->setValue(10);
 
     // setup UI
     ui->setupUi(this);
@@ -91,7 +97,10 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(cc, SIGNAL(cameraInitialized()), this, SLOT(cameraFinishedInit())); // wait until camera has finished init
     connect(this, SIGNAL(startCameraDisplay()), cc, SLOT(startVideo()));
     connect(this, SIGNAL(stopCameraDisplay()), cc, SLOT(stopVideo()));
-    connect(cc, SIGNAL(updateImage(QImage*)), this, SLOT(cameraFrameReceived(QImage*)));
+    connect(cc, SIGNAL(updateImage(QImage*)), this, SLOT(cameraFrameReceived(QImage*))); // update GUI when new frame available
+    connect(ui->OptimizeParamsButton, SIGNAL(clicked()), cc, SLOT(optimizeCameraParams()));
+    connect(this, SIGNAL(setCameraParams(int,int)), cc, SLOT(setCameraParams(int,int)));
+    connect(cc, SIGNAL(updateCameraParamsInGui(double *)), this, SLOT(updateCameraParamsInGui(double *)));
     connect(this, SIGNAL(closeCamera()), cc, SLOT(closeCamera())); // tell camera to close
     connect(cc, SIGNAL(cameraClosed()), this, SLOT(cameraFinishedClose())); // wait until camera is finished closing
     connect(cc, SIGNAL(destroyed()), thread_cc, SLOT(quit()));
@@ -151,6 +160,13 @@ MainWindow::~MainWindow()
 
 
 }
+
+
+/* **************************************
+ *                                      *
+ *  Basic ui and variable stuff         *
+ *                                      *
+ * ************************************ */
 
 
 //on_stopButton_clicked: close serial port
@@ -250,6 +266,72 @@ void MainWindow::pressureUpdatedSlot(){
 }
 
 
+
+/* **************************************
+ *                                      *
+ *  Measure functions                   *
+ *                                      *
+ * ************************************ */
+
+
+
+
+// slot to signify LAC port is closed
+void MainWindow::motorClosedSlot(){
+    motorOpen = 0;
+    ui->BoardStatusLabel->setText("CLOSED");
+}
+
+
+// slot to signify LAC port is open
+void MainWindow::motorOpenSlot(){
+    motorOpen = 1;
+    ui->BoardStatusLabel->setText("OPEN");
+}
+
+
+// take value from horizontal slider and relay to motor
+void MainWindow::on_horizontalSlider_sliderReleased()
+{
+    // motor position goes from 0-50
+    // needs to be converted to 0-1024
+    double strokePercentage = ((double) ui->horizontalSlider->value())
+            / ((double) MAX_STROKE);
+
+    int voltageToWrite = strokePercentage * 1023;
+    emit setMotorPosition(voltageToWrite);
+    motorPosition = strokePercentage * MAX_STROKE;
+}
+
+
+
+// update desired balance pressure when box value changes
+void MainWindow::on_balancePressureDouble_valueChanged(double arg1)
+{
+    balancePressureValue = arg1;
+}
+
+
+// update desired measurement pressure when box value changes
+void MainWindow::on_measurePressureDouble_valueChanged(double arg1)
+{
+    measurePressureValue = arg1;
+}
+
+
+// update the motor position
+void MainWindow::updateMotorPosition(double value){
+    motorPosition = value;
+}
+
+
+/* **************************************
+ *                                      *
+ *  Measure functions                   *
+ *                                      *
+ * ************************************ */
+
+
 // on_valveButton_clicked: write high or low value to valve pin
 void MainWindow::on_valveButton_clicked()
 {
@@ -295,48 +377,6 @@ void MainWindow::on_ventButton_clicked()
     }
 
     emit setVent(valueToWrite);
-}
-
-
-// slot to signify LAC port is closed
-void MainWindow::motorClosedSlot(){
-    motorOpen = 0;
-    ui->BoardStatusLabel->setText("CLOSED");
-}
-
-
-// slot to signify LAC port is open
-void MainWindow::motorOpenSlot(){
-    motorOpen = 1;
-    ui->BoardStatusLabel->setText("OPEN");
-}
-
-
-// take value from horizontal slider and relay to motor
-void MainWindow::on_horizontalSlider_sliderReleased()
-{
-    // motor position goes from 0-50
-    // needs to be converted to 0-1024
-    double strokePercentage = ((double) ui->horizontalSlider->value())
-            / ((double) MAX_STROKE);
-
-    int voltageToWrite = strokePercentage * 1023;
-    emit setMotorPosition(voltageToWrite);
-    motorPosition = strokePercentage * MAX_STROKE;
-}
-
-
-// update desired balance pressure when box value changes
-void MainWindow::on_balancePressureDouble_valueChanged(double arg1)
-{
-    balancePressureValue = arg1;
-}
-
-
-// update desired measurement pressure when box value changes
-void MainWindow::on_measurePressureDouble_valueChanged(double arg1)
-{
-    measurePressureValue = arg1;
 }
 
 
@@ -451,12 +491,6 @@ void MainWindow::balanceFinished(int successful, int flag){
 }
 
 
-// update the motor position
-void MainWindow::updateMotorPosition(double value){
-    motorPosition = value;
-}
-
-
 /*
  * on_measureButton_clicked():
  * Conduct a measurement: achieve desired pressure, open valve until
@@ -475,13 +509,20 @@ void MainWindow::on_measureButton_clicked()
 
 
 
+/* **************************************
+ *                                      *
+ *  Camera stuff                        *
+ *                                      *
+ * ************************************ */
+
+
 // update cameraImagePtr when a new frame is received from the camera
 void MainWindow::cameraFrameReceived(QImage* imgFromCamera){
 
     cameraImagePtr = imgFromCamera;
 
     if (cameraOpen){
-
+        // attempt some sort of memory cleanup
         if (scene != NULL){
             delete scene;
         }
@@ -493,6 +534,10 @@ void MainWindow::cameraFrameReceived(QImage* imgFromCamera){
         ui->cameraImageDisplay->fitInView(scene->itemsBoundingRect(),
                                           Qt::KeepAspectRatio);
         ui->cameraImageDisplay->repaint();
+
+        qint64 currTime = QDateTime::currentMSecsSinceEpoch();
+        qDebug() << "frame msecs: " << currTime - baseTime;
+        baseTime = currTime;
     }
 }
 
@@ -503,6 +548,7 @@ void MainWindow::cameraFinishedInit(){
     cameraOpen = 1;
     ui->StartVideoButton->setEnabled(true);
 }
+
 
 // signifies that camera is done closing and mainwindow can be deleted
 void MainWindow::cameraFinishedClose(){
@@ -535,6 +581,7 @@ void MainWindow::on_StartVideoButton_clicked()
 }
 
 
+
 // if camera thread is running, initialize camera
 void MainWindow::on_InitCameraButton_clicked()
 {
@@ -545,6 +592,87 @@ void MainWindow::on_InitCameraButton_clicked()
     }
 }
 
+
+
+/* change exposure time when slider released */
+void MainWindow::on_ExposureTimeSlider_sliderReleased()
+{
+//    double valuePct =  ui->ExposureTimeSlider->value();
+//    double valueOut = (exposureTimeMax - exposureTimeMin) * valuePct / 100 + exposureTimeMin;
+//    emit setCameraParams(CHANGE_EXPOSURE_TIME, valueOut);
+}
+
+
+/* change frame rate when slider released */
+void MainWindow::on_FrameRateSlider_sliderReleased()
+{
+//    double valuePct =  ui->FrameRateSlider->value();
+//    double valueOut = (frameRateMax - frameRateMin) * valuePct / 100 + frameRateMin;
+//    emit setCameraParams(CHANGE_FRAME_RATE, valueOut);
+}
+
+
+/* update camera param ranges in GUI
+ * paramList is: [frameRateLow, frameRateHigh, frameRateCurr,
+ * exposureTimeLow, exposureTimeHigh, exposureTimeCurr]
+ * */
+void MainWindow::updateCameraParamsInGui(double *paramList){
+
+//    if (paramList == NULL){
+//        return;
+//    }
+
+//    for (int i = 0; i < 6; i++){
+
+//        if (paramList[i] > 0){
+
+//        }
+
+//        if (i == 0){
+//            // update frameRateMin
+//            frameRateMin = paramList[i];
+//            QString frameRateLowS;
+//            frameRateLowS.sprintf("%+01.4f", paramList[i]);
+//            frameRateLowS.append(" fps");
+//            ui->FrameRateLow->setText(frameRateLowS);
+//        } else if (i == 1){
+//            // update frameRateMax
+//            frameRateMax = paramList[i];
+//            QString frameRateHighS;
+//            frameRateHighS.sprintf("%+01.4f", paramList[i]);
+//            frameRateHighS.append(" fps");
+//            ui->FrameRateHigh->setText(frameRateHighS);
+//        } else if (i == 2){
+//            // update frameRateCurr
+//            frameRateCurr = paramList[i];
+//            double framePct = 100 * (frameRateCurr - frameRateMin) /
+//                    (frameRateMax - frameRateMin);
+//            ui->FrameRateSlider->setValue((int) framePct);
+//        } else if (i == 3){
+//            // update exposureTimeMin
+//            exposureTimeMin = paramList[i];
+//            QString exposureTimeLowS;
+//            exposureTimeLowS.sprintf("%+01.4f", paramList[i]);
+//            exposureTimeLowS.append(" msec");
+//            ui->ExposureTimeLow->setText(exposureTimeLowS);
+//        } else if (i == 4){
+//            // update exposureTimeMax
+//            exposureTimeMax = paramList[i];
+//            QString exposureTimeHighS;
+//            exposureTimeHighS.sprintf("%+01.4f", paramList[i]);
+//            exposureTimeHighS.append(" msec");
+//            ui->ExposureTimeHigh->setText(exposureTimeHighS);
+//        } else if (i == 5){
+//            // update exposureTimeCurr
+//            exposureTimeCurr = paramList[i];
+//            double exposurePct = 100 * (exposureTimeCurr - exposureTimeMin) /
+//                    (exposureTimeMax - exposureTimeMin);
+//            ui->ExposureTimeSlider->setValue((int) exposurePct);
+//        }
+//    }
+
+//    delete [] paramList;
+}
 
 
 

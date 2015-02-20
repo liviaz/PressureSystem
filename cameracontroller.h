@@ -15,12 +15,18 @@
 #  include <QtCore/private/qwineventnotifier_p.h>
 #endif
 
+#define MAX_STROKE 50
+#define MOTOR_INIT_PCT 70
+#define INVALID_PRESSURE -100
+#define CHANGE_EXPOSURE_TIME 1
+#define CHANGE_FRAME_RATE 2
+
+
 class CameraController : public QObject
 {
     Q_OBJECT
 public:
     explicit CameraController(QObject *parent = 0);
-    void setCameraParams(QString param, int value);
     int resX;
     int resY;
     ~CameraController();
@@ -39,12 +45,13 @@ private:
     INT nRet; // return value for camera SDK functions
     HANDLE hEvent;
     QWinEventNotifier *notifier;
+    INT maxPixelClock;
+    double maxFrameRate;
 
     // other variables
     int videoOn;
     int cameraOn;
     int windowOpen;
-    QString windowName;
     QImage *cameraImage;
     void initializeCameraParams();
 
@@ -52,6 +59,7 @@ signals:
     void cameraInitialized();
     void cameraClosed();
     void updateImage(QImage *cameraImage);
+    void updateCameraParamsInGui(double *paramList);
 
 public slots:
     void initCamera();
@@ -59,6 +67,8 @@ public slots:
     void stopVideo();
     void closeCamera();
     void eventSignaled(HANDLE h);
+    void optimizeCameraParams();
+    void setCameraParams(int param, int value);
 
 private slots:
 
