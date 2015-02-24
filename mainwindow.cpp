@@ -40,14 +40,16 @@ MainWindow::MainWindow(QWidget *parent) :
     cameraClosable = 0;
     scene = NULL;
     baseTime = QDateTime::currentMSecsSinceEpoch();
+    frameRateMinimum = 0;
+    frameRateMaximum = 100;
+    frameRateCurr = 10;
+    frameRateIncrement = 0.01;
     exposureTimeMin = 0;
     exposureTimeMax = 100;
     exposureTimeCurr = 10;
-    ui->ExposureTimeSlider->setValue(10);
-    frameRateMin = 0;
-    frameRateMax = 100;
-    frameRateCurr = 10;
-    ui->FrameRateSlider->setValue(10);
+    exposureTimeIncrement = 1;
+    totalFrames = 0;
+    framesDropped = 0;
 
     // setup UI
     ui->setupUi(this);
@@ -64,6 +66,10 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->StartVideoButton->setText("Start Video");
     ui->horizontalSlider->setValue((int) motorPosition);
     ui->cameraImageDisplay->setScene(scene);
+    ui->FrameRateSlider->setValue(10);
+    ui->ExposureTimeSlider->setValue(10);
+    ui->PixelClockIndicator->setText("40");
+    ui->PixelClockSlider->setValue(40);
 
     // start motorController, arduinoController, and cameraController
     mc = new MotorController();
@@ -100,6 +106,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(cc, SIGNAL(updateImage(QImage*)), this, SLOT(cameraFrameReceived(QImage*))); // update GUI when new frame available
     connect(ui->OptimizeParamsButton, SIGNAL(clicked()), cc, SLOT(optimizeCameraParams()));
     connect(this, SIGNAL(setCameraParams(int,int)), cc, SLOT(setCameraParams(int,int)));
+    connect(cc, SIGNAL(updateFrameRate(double)), this, SLOT(updateFrameRate(double)));
     connect(cc, SIGNAL(updateCameraParamsInGui(double *)), this, SLOT(updateCameraParamsInGui(double *)));
     connect(this, SIGNAL(closeCamera()), cc, SLOT(closeCamera())); // tell camera to close
     connect(cc, SIGNAL(cameraClosed()), this, SLOT(cameraFinishedClose())); // wait until camera is finished closing
@@ -183,6 +190,7 @@ void MainWindow::on_stopButton_clicked()
 
     if (videoOpen){
         emit stopCameraDisplay();
+        ui->StartVideoButton->setText("STOP VIDEO");
         videoOpen = 0;
     }
 
@@ -538,6 +546,12 @@ void MainWindow::cameraFrameReceived(QImage* imgFromCamera){
         qint64 currTime = QDateTime::currentMSecsSinceEpoch();
         qDebug() << "frame msecs: " << currTime - baseTime;
         baseTime = currTime;
+
+        totalFrames++;
+        QString totalFramesS;
+        totalFramesS.sprintf("%d", totalFrames);
+        ui->TotalFramesIndicator->setText(totalFramesS);
+
     }
 }
 
@@ -597,84 +611,136 @@ void MainWindow::on_InitCameraButton_clicked()
 /* change exposure time when slider released */
 void MainWindow::on_ExposureTimeSlider_sliderReleased()
 {
-//    double valuePct =  ui->ExposureTimeSlider->value();
-//    double valueOut = (exposureTimeMax - exposureTimeMin) * valuePct / 100 + exposureTimeMin;
-//    emit setCameraParams(CHANGE_EXPOSURE_TIME, valueOut);
+    double valuePct =  ui->ExposureTimeSlider->value();
+    double valueOut = exposureTimeMin + valuePct * exposureTimeIncrement;
+    emit setCameraParams(CHANGE_EXPOSURE_TIME, valueOut);
 }
 
 
-/* change frame rate when slider released */
+/* change frame rate when slider released
+ * frameRateIncrement maps to 1 on the slider increment
+ *
+ */
 void MainWindow::on_FrameRateSlider_sliderReleased()
 {
-//    double valuePct =  ui->FrameRateSlider->value();
-//    double valueOut = (frameRateMax - frameRateMin) * valuePct / 100 + frameRateMin;
-//    emit setCameraParams(CHANGE_FRAME_RATE, valueOut);
+    double valuePct =  ui->FrameRateSlider->value();
+    double valueOut = frameRateMinimum + valuePct * frameRateIncrement;
+    emit setCameraParams(CHANGE_FRAME_RATE, valueOut);
 }
+
+// change pixel clock
+void MainWindow::on_PixelClockSlider_sliderReleased()
+{
+    QString pixelClockActual;
+    pixelClockActual.sprintf("%d",ui->PixelClockSlider->value());
+    ui->PixelClockIndicator->setText(pixelClockActual);
+    emit setCameraParams(CHANGE_PIXEL_CLOCK, ui->PixelClockSlider->value());
+}
+
+
 
 
 /* update camera param ranges in GUI
  * paramList is: [frameRateLow, frameRateHigh, frameRateCurr,
- * exposureTimeLow, exposureTimeHigh, exposureTimeCurr]
+ * exposureTimeLow, exposureTimeHigh, exposureTimeCurr,
+ * exposureTimeIncrement]
  * */
 void MainWindow::updateCameraParamsInGui(double *paramList){
 
-//    if (paramList == NULL){
-//        return;
-//    }
+    if (paramList == NULL){
+        return;
+    }
 
-//    for (int i = 0; i < 6; i++){
+    for (int i = 0; i < 7; i++){
 
-//        if (paramList[i] > 0){
+        // only update parameters with values > 0
+        if (paramList[i] > 0){            
+            if (i == 0){
+                 qDebug() << "update frameRateMinimum";
+                frameRateMinimum = paramList[i];
+                QString frameRateLowS;
+                frameRateLowS.sprintf("%1.2f", paramList[i]);
+                frameRateLowS.append(" fps");
+                ui->FrameRateLow->setText(frameRateLowS);
+                ui->FrameRateSlider->setMinimum(0);
+            } else if (i == 1){
+                 qDebug() << "update frameRateMaximum";
+                frameRateMaximum = paramList[i];
+                QString frameRateHighS;
+                frameRateHighS.sprintf("%1.2f", paramList[i]);
+                frameRateHighS.append(" fps");
+                ui->FrameRateHigh->setText(frameRateHighS);
+                ui->FrameRateSlider->setMaximum((int) ((frameRateMaximum - frameRateMinimum) /
+                                                   frameRateIncrement) + 1);
+                qDebug() << "frameRateSliderMax: " << ui->FrameRateSlider->maximum();
+            } else if (i == 2){
+                 qDebug() << "update frameRateCurr";
+                frameRateCurr = paramList[i];
+                ui->FrameRateSlider->setValue((int) ((frameRateCurr - frameRateMinimum) /
+                                                     frameRateIncrement));
+                QString frameRateCurrS;
+                frameRateCurrS.sprintf("%1.2f", frameRateCurr);
+                frameRateCurrS.append(" fps");
+                ui->FrameRateIndicator->setText(frameRateCurrS);
+                qDebug() << "frameRateSliderValue: " << ui->FrameRateSlider->value();
+            } else if (i == 3){
+                 qDebug() << "update exposureTimeMin";
+                exposureTimeMin = paramList[i];
+                QString exposureTimeLowS;
+                exposureTimeLowS.sprintf("%1.2f", paramList[i]);
+                exposureTimeLowS.append(" msec");
+                ui->ExposureTimeLow->setText(exposureTimeLowS);
+            } else if (i == 4){
+                 qDebug() << "update exposureTimeMax";
+                exposureTimeMax = paramList[i];
+                ui->ExposureTimeSlider->setMaximum((int) ((exposureTimeMax - exposureTimeMin) /
+                                                   exposureTimeIncrement) + 1);
+                QString exposureTimeHighS;
+                exposureTimeHighS.sprintf("%1.2f", paramList[i]);
+                exposureTimeHighS.append(" msec");
+                ui->ExposureTimeHigh->setText(exposureTimeHighS);
+            } else if (i == 5){
+                qDebug() << "update exposureTimeCurr";
+                exposureTimeCurr = paramList[i];
+                QString exposureTimeCurrS;
+                exposureTimeCurrS.sprintf("%1.2f", exposureTimeCurr);
+                exposureTimeCurrS.append(" msec");
+                ui->ExposureTimeIndicator->setText(exposureTimeCurrS);
+                ui->ExposureTimeSlider->setValue((int) ((exposureTimeCurr - exposureTimeMin) /
+                                                        exposureTimeIncrement));
+            } else if (i == 6) {
+                qDebug() << "update exposureTimeIncrement";
+                exposureTimeIncrement = paramList[i];
+                ui->ExposureTimeSlider->setMinimum(0);
+                ui->ExposureTimeSlider->setMaximum((int) ((exposureTimeMax - exposureTimeMin) /
+                                                   exposureTimeIncrement) + 1);
+                ui->ExposureTimeSlider->setValue((int) ((exposureTimeCurr - exposureTimeMin) /
+                                                        exposureTimeIncrement));
+            }
 
-//        }
+        }
 
-//        if (i == 0){
-//            // update frameRateMin
-//            frameRateMin = paramList[i];
-//            QString frameRateLowS;
-//            frameRateLowS.sprintf("%+01.4f", paramList[i]);
-//            frameRateLowS.append(" fps");
-//            ui->FrameRateLow->setText(frameRateLowS);
-//        } else if (i == 1){
-//            // update frameRateMax
-//            frameRateMax = paramList[i];
-//            QString frameRateHighS;
-//            frameRateHighS.sprintf("%+01.4f", paramList[i]);
-//            frameRateHighS.append(" fps");
-//            ui->FrameRateHigh->setText(frameRateHighS);
-//        } else if (i == 2){
-//            // update frameRateCurr
-//            frameRateCurr = paramList[i];
-//            double framePct = 100 * (frameRateCurr - frameRateMin) /
-//                    (frameRateMax - frameRateMin);
-//            ui->FrameRateSlider->setValue((int) framePct);
-//        } else if (i == 3){
-//            // update exposureTimeMin
-//            exposureTimeMin = paramList[i];
-//            QString exposureTimeLowS;
-//            exposureTimeLowS.sprintf("%+01.4f", paramList[i]);
-//            exposureTimeLowS.append(" msec");
-//            ui->ExposureTimeLow->setText(exposureTimeLowS);
-//        } else if (i == 4){
-//            // update exposureTimeMax
-//            exposureTimeMax = paramList[i];
-//            QString exposureTimeHighS;
-//            exposureTimeHighS.sprintf("%+01.4f", paramList[i]);
-//            exposureTimeHighS.append(" msec");
-//            ui->ExposureTimeHigh->setText(exposureTimeHighS);
-//        } else if (i == 5){
-//            // update exposureTimeCurr
-//            exposureTimeCurr = paramList[i];
-//            double exposurePct = 100 * (exposureTimeCurr - exposureTimeMin) /
-//                    (exposureTimeMax - exposureTimeMin);
-//            ui->ExposureTimeSlider->setValue((int) exposurePct);
-//        }
-//    }
+    }
 
-//    delete [] paramList;
+    delete [] paramList;
 }
 
 
 
 
+
+
+
+
+// updateFrameRate in GUI only
+void MainWindow::updateFrameRate(double frameRate){
+
+    frameRateCurr = frameRate;
+    QString frameRateCurrS;
+    frameRateCurrS.sprintf("%1.2f", frameRateCurr);
+    frameRateCurrS.append(" fps");
+    ui->FrameRateIndicator->setText(frameRateCurrS);
+    ui->FrameRateSlider->setValue((int) ((frameRateCurr - frameRateMinimum) /
+                                         frameRateIncrement));
+}
 

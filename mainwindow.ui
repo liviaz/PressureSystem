@@ -273,10 +273,13 @@ z-index: 2;</string>
      <property name="geometry">
       <rect>
        <x>190</x>
-       <y>80</y>
+       <y>70</y>
        <width>131</width>
        <height>16</height>
       </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
      </property>
      <property name="text">
       <string/>
@@ -436,10 +439,13 @@ z-index: 2;</string>
      <property name="geometry">
       <rect>
        <x>370</x>
-       <y>80</y>
+       <y>70</y>
        <width>141</width>
        <height>16</height>
       </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
      </property>
      <property name="text">
       <string/>
@@ -499,9 +505,9 @@ z-index: 2;</string>
     <widget class="QLabel" name="ExposureTimeHeading">
      <property name="geometry">
       <rect>
-       <x>240</x>
-       <y>102</y>
-       <width>261</width>
+       <x>230</x>
+       <y>124</y>
+       <width>121</width>
        <height>16</height>
       </rect>
      </property>
@@ -509,14 +515,14 @@ z-index: 2;</string>
       <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
      </property>
      <property name="text">
-      <string>Set Exposure Time</string>
+      <string>Set Exposure Time:</string>
      </property>
     </widget>
     <widget class="QSlider" name="ExposureTimeSlider">
      <property name="geometry">
       <rect>
-       <x>240</x>
-       <y>130</y>
+       <x>230</x>
+       <y>152</y>
        <width>301</width>
        <height>16</height>
       </rect>
@@ -534,14 +540,17 @@ z-index: 2;</string>
     <widget class="QSlider" name="FrameRateSlider">
      <property name="geometry">
       <rect>
-       <x>240</x>
-       <y>198</y>
+       <x>230</x>
+       <y>220</y>
        <width>301</width>
        <height>16</height>
       </rect>
      </property>
      <property name="maximum">
       <number>100</number>
+     </property>
+     <property name="pageStep">
+      <number>1</number>
      </property>
      <property name="value">
       <number>40</number>
@@ -553,9 +562,9 @@ z-index: 2;</string>
     <widget class="QLabel" name="FrameRateHeading">
      <property name="geometry">
       <rect>
-       <x>240</x>
-       <y>170</y>
-       <width>261</width>
+       <x>230</x>
+       <y>192</y>
+       <width>101</width>
        <height>16</height>
       </rect>
      </property>
@@ -563,36 +572,20 @@ z-index: 2;</string>
       <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
      </property>
      <property name="text">
-      <string>Set Frame Rate</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="FrameRateLabel">
-     <property name="geometry">
-      <rect>
-       <x>240</x>
-       <y>240</y>
-       <width>121</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
-     </property>
-     <property name="text">
-      <string>Actual Frame Rate:</string>
+      <string>Set Frame Rate:</string>
      </property>
     </widget>
     <widget class="QLabel" name="FrameRateIndicator">
      <property name="geometry">
       <rect>
-       <x>370</x>
-       <y>240</y>
+       <x>330</x>
+       <y>190</y>
        <width>141</width>
-       <height>21</height>
+       <height>20</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
+      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
      </property>
      <property name="text">
       <string/>
@@ -601,14 +594,14 @@ z-index: 2;</string>
     <widget class="QLabel" name="FrameRateLow">
      <property name="geometry">
       <rect>
-       <x>240</x>
-       <y>208</y>
+       <x>230</x>
+       <y>230</y>
        <width>81</width>
        <height>21</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
+      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
      </property>
      <property name="text">
       <string/>
@@ -617,14 +610,14 @@ z-index: 2;</string>
     <widget class="QLabel" name="FrameRateHigh">
      <property name="geometry">
       <rect>
-       <x>460</x>
-       <y>208</y>
+       <x>450</x>
+       <y>230</y>
        <width>81</width>
        <height>21</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
+      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
      </property>
      <property name="text">
       <string/>
@@ -633,14 +626,14 @@ z-index: 2;</string>
     <widget class="QLabel" name="ExposureTimeLow">
      <property name="geometry">
       <rect>
-       <x>240</x>
-       <y>140</y>
+       <x>230</x>
+       <y>162</y>
        <width>81</width>
        <height>21</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
+      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
      </property>
      <property name="text">
       <string/>
@@ -649,14 +642,14 @@ z-index: 2;</string>
     <widget class="QLabel" name="ExposureTimeHigh">
      <property name="geometry">
       <rect>
-       <x>460</x>
-       <y>140</y>
+       <x>450</x>
+       <y>162</y>
        <width>81</width>
        <height>21</height>
       </rect>
      </property>
      <property name="styleSheet">
-      <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
+      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
      </property>
      <property name="text">
       <string/>
@@ -710,6 +703,111 @@ z-index: 2;</string>
       <string>Optimize Params</string>
      </property>
     </widget>
+    <widget class="QSlider" name="PixelClockSlider">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>80</y>
+       <width>301</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="minimum">
+      <number>5</number>
+     </property>
+     <property name="maximum">
+      <number>43</number>
+     </property>
+     <property name="pageStep">
+      <number>1</number>
+     </property>
+     <property name="value">
+      <number>40</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="PixelClockHeading">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>52</y>
+       <width>101</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
+     </property>
+     <property name="text">
+      <string>Set Pixel Clock:</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="PixelClockHigh">
+     <property name="geometry">
+      <rect>
+       <x>510</x>
+       <y>90</y>
+       <width>31</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
+     </property>
+     <property name="text">
+      <string>43</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="PixelClockLow">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>90</y>
+       <width>31</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
+     </property>
+     <property name="text">
+      <string>5</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="PixelClockIndicator">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>52</y>
+       <width>101</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="ExposureTimeIndicator">
+     <property name="geometry">
+      <rect>
+       <x>350</x>
+       <y>122</y>
+       <width>101</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
    </widget>
    <widget class="QPushButton" name="ZoomToSelectionButton">
     <property name="geometry">
@@ -741,6 +839,70 @@ z-index: 2;</string>
     </property>
     <property name="text">
      <string>Clear Selection</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TotalFramesIndicator">
+    <property name="geometry">
+     <rect>
+      <x>230</x>
+      <y>690</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="TotalFramesHeading">
+    <property name="geometry">
+     <rect>
+      <x>130</x>
+      <y>690</y>
+      <width>91</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
+    </property>
+    <property name="text">
+     <string>Total Frames:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="FramesDroppedIndicator">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>690</y>
+      <width>141</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="FramesDroppedHeading">
+    <property name="geometry">
+     <rect>
+      <x>410</x>
+      <y>690</y>
+      <width>111</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
+    </property>
+    <property name="text">
+     <string>Frames Dropped:</string>
     </property>
    </widget>
   </widget>

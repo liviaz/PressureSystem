@@ -35,11 +35,9 @@ LIBS += -LC:/Users/Livia/Desktop/OpenCV/v2410/build/x86/vc10/bin \
     -lopencv_imgproc2410d
 
 
-LIBS += -L"C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSystem/FirgelliMotor" \
-    -lmpusbapi
-
-LIBS += -L"C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSystem/Camera" \
-    -luc480_64
+LIBS += "C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSystem/FirgelliMotor/mpusbapi.lib"
+LIBS += "C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSystem/Camera/uc480.lib"
+LIBS += "C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSystem/Camera/uc480_tools.lib"
 
 
 SOURCES += main.cpp \

@@ -1,0 +1,440 @@
+;===============================================================
+; uc480.inf
+;
+; Windows 2000/XP/Server2003/Vista/Win7 Installation file (.inf) 
+; for the uc480 Camera family
+;
+; (c) Copyright 2004 - 2010
+;
+;===============================================================
+
+[Version]
+Signature   = $Windows NT$
+Class       = USB
+ClassGuid   = {36FC9E60-C465-11CF-8056-444553540000} 
+Provider    = %CompanyName%
+DriverVer   = 12/06/2010, 3.80.12.0
+CatalogFile.ntamd64 = uc480_64.cat
+
+
+;==========================================
+; Source file information
+;==========================================
+
+[DestinationDirs]
+CAMERA.CopyFiles.sys      = 12     ; %windir%\system32\drivers
+CAMERA.CopyFiles.dll      = 11     ; %windir%\system32\drivers
+CAMERA_BOOT.CopyFiles.sys = 12     ; %windir%\system32\drivers
+CAMERA_BOOT.CopyFiles.dll = 11     ; %windir%\system32\drivers
+
+
+[SourceDisksNames]
+1 = %uc480InstallationMedia%,,,\drivers
+2 = %uc480InstallationMedia%,,,
+
+
+[SourceDisksFiles]
+uc480_64.sys       = 1
+uc480_boot_64.sys  = 1
+uc480_64.dll       = 2
+uc480_tools_64.dll = 2
+
+;==========================================
+; driver information
+;==========================================
+
+[Manufacturer]
+%CompanyName% = OEMINC, ntamd64
+
+[OEMINC.ntamd64]
+;
+%Model_start%      =CAMERA_BOOT.Dev, USB\VID_1409&PID_1000  ; boot device
+%ModelGroup_1_2%   =CAMERA.Dev, USB\VID_1409&PID_1410       ; cmos, 0640x0480, rolling, 1/3"
+%ModelGroup_3_4%   =CAMERA.Dev, USB\VID_1409&PID_1440       ; cmos, 1280x1024, rolling, 2/3"
+%ModelGroup_8%     =CAMERA.Dev, USB\VID_1409&PID_1450       ; cmos, 1600x1200, rolling, 1/2"
+%ModelGroup_a%     =CAMERA.Dev, USB\VID_1409&PID_1460       ; cmos, 2048x1536, rolling, 1/2"
+%ModelGroup_b_c%   =CAMERA.Dev, USB\VID_1409&PID_1480       ; cmos, 2592x1944, rolling, 1/2"
+%ModelGroup_10_11% =CAMERA.Dev, USB\VID_1409&PID_1210       ; cmos, 0640x0480, global,  1/2"
+%ModelGroup_12_13% =CAMERA.Dev, USB\VID_1409&PID_1220       ; cmos, 0752x0480, global,  1/3"
+%ModelGroup_15%    =CAMERA.Dev, USB\VID_1409&PID_1640       ; cmos, 1280x1024, rolling, 1/3"
+%ModelGroup_17%    =CAMERA.Dev, USB\VID_1409&PID_1550       ; cmos, 1600x1200, rolling, 1/3"
+%ModelGroup_18_19% =CAMERA.Dev, USB\VID_1409&PID_1223       ; cmos, 0752x0480, global,  1/3", single board
+%ModelGroup_22_23% =CAMERA.Dev, USB\VID_1409&PID_1225	    ; cmos, 0752x0480, global,  1/3", plastic housing
+%ModelGroup_25%    =CAMERA.Dev, USB\VID_1409&PID_1645       ; cmos, 1280x1024, rolling, 1/3", plastic housing
+%ModelGroup_27%    =CAMERA.Dev, USB\VID_1409&PID_1555       ; cmos, 1600x1200, rolling, 1/3", plastic housing
+%ModelGroup_28_29% =CAMERA.Dev, USB\VID_1409&PID_1545       ; cmos, 1280x1024, rolling, 1/2", single board
+%ModelGroup_2b%    =CAMERA.Dev, USB\VID_1409&PID_1455       ; cmos, 1600x1200, rolling, 1/2", plastic housing
+%ModelGroup_2d%    =CAMERA.Dev, USB\VID_1409&PID_1465       ; cmos, 2048x1536, rolling, 1/2", plastic housing
+%ModelGroup_2f%    =CAMERA.Dev, USB\VID_1409&PID_1485       ; cmos, 2592x1944, rolling, 1/2", plastic housing
+%ModelGroup_30_31% =CAMERA.Dev, USB\VID_1409&PID_1540       ; cmos, 1280x1024, rolling, 1/2"
+%ModelGroup_32_33% =CAMERA.Dev, USB\VID_1409&PID_1543       ; cmos, 1280x1024, rolling, 1/2", single board
+%ModelGroup_35%    =CAMERA.Dev, USB\VID_1409&PID_1453       ; cmos, 1600x1200, rolling, 1/2", single board
+%ModelGroup_37%    =CAMERA.Dev, USB\VID_1409&PID_1463       ; cmos, 2048x1536, rolling, 1/2", single board
+%ModelGroup_39%    =CAMERA.Dev, USB\VID_1409&PID_1483       ; cmos, 2592x1944, rolling, 1/2", single board
+%ModelGroup_3a_3b% =CAMERA.Dev, USB\VID_1409&PID_1544       ; cmos, 1280x1024, rolling, 1/2", single board
+%ModelGroup_3e_3f% =CAMERA.Dev, USB\VID_1409&PID_1490       ; cmos, 3840x2748, rolling, 1/2.5"
+%ModelGroup_41%    =CAMERA.Dev, USB\VID_1409&PID_1495       ; cmos, 3840x2748, rolling, 1/2.5", plastic housing 
+%ModelGroup_50_51% =CAMERA.Dev, USB\VID_1409&PID_1240       ; cmos, 1280x1024, global,  1/2"
+%ModelGroup_52%    =CAMERA.Dev, USB\VID_1409&PID_C005       ; cmos, 0752x0480, global,  1/3", single board
+%ModelGroup_54_55% =CAMERA.Dev, USB\VID_1409&PID_1245       ; cmos, 1280x1024, global,  1/2", plastic housing
+%ModelGroup_4a%    =CAMERA.Dev, USB\VID_1409&PID_1120       ; cmos, 0768x0576, rolling, 1/2"
+%ModelGroup_4c_4d% =CAMERA.Dev, USB\VID_1409&PID_1008       ; cmos, 3264x2448, rolling, 1/3 
+%ModelGroup_80_81% =CAMERA.Dev, USB\VID_1409&PID_2230       ; ccd, 1024x0768, global, 1/3"
+%ModelGroup_82_83% =CAMERA.Dev, USB\VID_1409&PID_2410       ; ccd, 0640x0480, global, 1/3"
+%ModelGroup_84_85% =CAMERA.Dev, USB\VID_1409&PID_2340       ; ccd, 1280x1024, global, 1/2"
+%ModelGroup_86_87% =CAMERA.Dev, USB\VID_1409&PID_2330       ; ccd, 1024x1024, global, 2/3"
+%ModelGroup_88_89% =CAMERA.Dev, USB\VID_1409&PID_2210       ; ccd, 0640x0480, global, 1/2"
+%ModelGroup_90_91% =CAMERA.Dev, USB\VID_1409&PID_2310       ; ccd, 0640x0480, global, 1/4"
+%ModelGroup_92_93% =CAMERA.Dev, USB\VID_1409&PID_2220       ; ccd, 0768x0582, global, 1/2"
+%ModelGroup_96_97% =CAMERA.Dev, USB\VID_1409&PID_2240       ; ccd, 1280x1024, global, 1/2"
+%ModelGroup_98_99% =CAMERA.Dev, USB\VID_1409&PID_2250       ; ccd, 1600x1200, global, 1/1.8"
+%ModelGroup_9a_9b% =CAMERA.Dev, USB\VID_1409&PID_2140       ; ccd, 1280x960,  global, 1/2"
+%ModelGroup_9c_9d% =CAMERA.Dev, USB\VID_1409&PID_2280       ; ccd, 2448x2048, global, 2/3"
+
+;==========================================
+; General installation section
+;==========================================
+
+[CAMERA.Dev]
+AddReg      = CAMERA.AddReg
+CopyFiles   = CAMERA.CopyFiles.sys, CAMERA.CopyFiles.dll
+
+
+[CAMERA.Dev.NT]
+AddReg      = CAMERA.AddReg
+CopyFiles   = CAMERA.CopyFiles.sys, CAMERA.CopyFiles.dll
+
+
+[CAMERA.AddReg]
+
+HKR,,DevLoader,,*ntkern
+HKR,,NTMPDriver,,uc480_64.sys
+
+
+[CAMERA.CopyFiles.sys]
+uc480_64.sys,,,4
+uc480_boot_64.sys,,,4
+
+
+[CAMERA.CopyFiles.dll]
+uc480_64.dll,,,4
+uc480_tools_64.dll,,,4
+
+;==========================================
+; Service Installation
+;==========================================
+
+[CAMERA.DEV.Services]     
+Addservice = uc480,  0x00000002, CAMERA.AddService, CAMERA.EventLog.Inst
+
+
+[CAMERA.Dev.NT.Services]
+Addservice = uc480,  0x00000002, CAMERA.AddService, CAMERA.EventLog.Inst
+
+
+[CAMERA.AddService]
+DisplayName    = %CAMERA.SvcDesc%
+ServiceType    = 1                    ; SERVICE_KERNEL_DRIVER
+StartType      = 3                    ; SERVICE_DEMAND_START
+ErrorControl   = 1                    ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\uc480_64.sys    ; Path to SYS file
+LoadOrderGroup = Extended Base
+AddReg         = CAMERA_SERVICE.AddReg
+
+
+[CAMERA_SERVICE.AddReg]
+HKR,"Parameters", "Model_1",  %REG_SZ%, %Model_1%
+HKR,"Parameters", "Model_2",  %REG_SZ%, %Model_2%
+HKR,"Parameters", "Model_3",  %REG_SZ%, %Model_3%
+HKR,"Parameters", "Model_4",  %REG_SZ%, %Model_4%
+HKR,"Parameters", "Model_8",  %REG_SZ%, %Model_8%
+HKR,"Parameters", "Model_a",  %REG_SZ%, %Model_a%
+HKR,"Parameters", "Model_b",  %REG_SZ%, %Model_b%
+HKR,"Parameters", "Model_c",  %REG_SZ%, %Model_c%
+HKR,"Parameters", "Model_10", %REG_SZ%, %Model_10%
+HKR,"Parameters", "Model_11", %REG_SZ%, %Model_11%
+HKR,"Parameters", "Model_12", %REG_SZ%, %Model_12%
+HKR,"Parameters", "Model_13", %REG_SZ%, %Model_13%
+HKR,"Parameters", "Model_15", %REG_SZ%, %Model_15%
+HKR,"Parameters", "Model_17", %REG_SZ%, %Model_17%
+HKR,"Parameters", "Model_18", %REG_SZ%, %Model_18%
+HKR,"Parameters", "Model_19", %REG_SZ%, %Model_19%
+HKR,"Parameters", "Model_22", %REG_SZ%, %Model_22%
+HKR,"Parameters", "Model_23", %REG_SZ%, %Model_23%
+HKR,"Parameters", "Model_25", %REG_SZ%, %Model_25%
+HKR,"Parameters", "Model_27", %REG_SZ%, %Model_27%
+HKR,"Parameters", "Model_28", %REG_SZ%, %Model_28%
+HKR,"Parameters", "Model_29", %REG_SZ%, %Model_29%
+HKR,"Parameters", "Model_2b", %REG_SZ%, %Model_2b%
+HKR,"Parameters", "Model_2d", %REG_SZ%, %Model_2d%
+HKR,"Parameters", "Model_2e", %REG_SZ%, %Model_2e%
+HKR,"Parameters", "Model_2f", %REG_SZ%, %Model_2f%
+HKR,"Parameters", "Model_30", %REG_SZ%, %Model_30%
+HKR,"Parameters", "Model_31", %REG_SZ%, %Model_31%
+HKR,"Parameters", "Model_32", %REG_SZ%, %Model_32%
+HKR,"Parameters", "Model_33", %REG_SZ%, %Model_33%
+HKR,"Parameters", "Model_35", %REG_SZ%, %Model_35%
+HKR,"Parameters", "Model_37", %REG_SZ%, %Model_37%
+HKR,"Parameters", "Model_39", %REG_SZ%, %Model_39%
+HKR,"Parameters", "Model_3a", %REG_SZ%, %Model_3a%
+HKR,"Parameters", "Model_3b", %REG_SZ%, %Model_3b%
+HKR,"Parameters", "Model_3e", %REG_SZ%, %Model_3e%
+HKR,"Parameters", "Model_3f", %REG_SZ%, %Model_3f%
+HKR,"Parameters", "Model_41", %REG_SZ%, %Model_41%
+HKR,"Parameters", "Model_4a", %REG_SZ%, %Model_4a%
+HKR,"Parameters", "Model_4c", %REG_SZ%, %Model_4c%
+HKR,"Parameters", "Model_4d", %REG_SZ%, %Model_4d%
+HKR,"Parameters", "Model_50", %REG_SZ%, %Model_50%
+HKR,"Parameters", "Model_51", %REG_SZ%, %Model_51%
+HKR,"Parameters", "Model_52", %REG_SZ%, %Model_52%
+HKR,"Parameters", "Model_54", %REG_SZ%, %Model_54%
+HKR,"Parameters", "Model_55", %REG_SZ%, %Model_55%
+HKR,"Parameters", "Model_80", %REG_SZ%, %Model_80%
+HKR,"Parameters", "Model_81", %REG_SZ%, %Model_81%
+HKR,"Parameters", "Model_82", %REG_SZ%, %Model_82%
+HKR,"Parameters", "Model_83", %REG_SZ%, %Model_83%
+HKR,"Parameters", "Model_84", %REG_SZ%, %Model_84%
+HKR,"Parameters", "Model_85", %REG_SZ%, %Model_85%
+HKR,"Parameters", "Model_86", %REG_SZ%, %Model_86%
+HKR,"Parameters", "Model_87", %REG_SZ%, %Model_87%
+HKR,"Parameters", "Model_88", %REG_SZ%, %Model_88%
+HKR,"Parameters", "Model_89", %REG_SZ%, %Model_89%
+HKR,"Parameters", "Model_90", %REG_SZ%, %Model_90%
+HKR,"Parameters", "Model_91", %REG_SZ%, %Model_91%
+HKR,"Parameters", "Model_92", %REG_SZ%, %Model_92%
+HKR,"Parameters", "Model_93", %REG_SZ%, %Model_93%
+HKR,"Parameters", "Model_96", %REG_SZ%, %Model_96%
+HKR,"Parameters", "Model_97", %REG_SZ%, %Model_97%
+HKR,"Parameters", "Model_98", %REG_SZ%, %Model_98%
+HKR,"Parameters", "Model_99", %REG_SZ%, %Model_99%
+HKR,"Parameters", "Model_9a", %REG_SZ%, %Model_9a%
+HKR,"Parameters", "Model_9b", %REG_SZ%, %Model_9b%
+HKR,"Parameters", "Model_9c", %REG_SZ%, %Model_9c%
+HKR,"Parameters", "Model_9d", %REG_SZ%, %Model_9d%
+
+HKR,"Parameters", "Manufacturer", %REG_SZ%, %CompanyName%
+
+HKR,"Parameters","Devices",%REG_DWORD%,0
+HKR,"Parameters","EventLogLevel",%REG_DWORD%, 2
+
+
+[CAMERA.EventLog.Inst]
+AddReg = CAMERA.EventLog.AddReg
+
+
+[CAMERA.EventLog.AddReg]
+HKR,,EventMessageFile,0x00020000,"%%SystemRoot%%\System32\IoLogMsg.dll;%%SystemRoot%%\System32\drivers\uc480_64.sys"
+HKR,,TypesSupported,0x00010001,7
+
+
+;==========================================
+; Strings
+;==========================================
+
+[Strings]
+
+;------------ Non-Localizable Strings begin ----------
+;------------ DO NOT EDIT !! -------------------------
+;
+REG_SZ         = 0x00000000
+REG_MULTI_SZ   = 0x00010000
+REG_EXPAND_SZ  = 0x00020000
+REG_BINARY     = 0x00000001
+REG_DWORD      = 0x00010001
+SERVICEROOT    = "System\CurrentControlSet\Services"
+;------------ Non-Localizable Strings end ------------
+
+;----------- Localizable Strings begin ---------------
+;------------ DO NOT EDIT !! -------------------------
+;
+CAMERA.SvcDesc         = "uc480 kernel driver"
+CAMERA_BOOT.SvcDesc    = "uc480 boot driver"
+Version                = "3.80.12.0"
+uc480InstallationMedia = "Path to uc480.inf"
+;----------- Localizable Strings end -----------------
+
+
+;====== OEM strings begin ============================
+;====== strings in quotation marks can be edit =======
+
+CompanyName     = "Thorlabs GmbH"
+ProductName     = "DCx USB 2.0 camera"
+StartMenuFolder = "Thorlabs DCx camera"
+InstallFolder   = "Thorlabs DCx camera"
+BkRed           = "216"
+BkGreen         = "0"
+BkBlue          = "10"
+
+Model_1  = "DCC141M"	;"C0640R13M"      ; cmos, 0640x0480, rolling, 1/3", mono
+Model_2  = "DCC141C"	;"C0640R13C"      ; cmos, 0640x0480, rolling, 1/3", color
+Model_3  = "DCC144M"	;"C1280R23M"      ; cmos, 1280x1024, rolling, 2/3", mono
+Model_4  = "DCC144C"	;"C1280R23C"      ; cmos, 1280x1024, rolling, 2/3", color
+Model_8  = "DCC145C"	;"C1600R12C"      ; cmos, 1600x1200, rolling, 1/2", color
+Model_a  = "DCC146C"	;"C2048R12C"      ; cmos, 2048x1536, rolling, 1/2", color
+Model_b  = "DCC548M"    ;"C2592R12M"      ; cmos, 2592x1944, rolling, 1/2", color
+Model_c  = "DCC148C"	;"C2592R12C"      ; cmos, 2592x1944, rolling, 1/2", color
+Model_10 = "DCC121M"	;"C0640G12M"      ; cmos, 0640x0480, global,  1/2", mono
+Model_11 = "DCC121C"	;"C0640G12C"      ; cmos, 0640x0480, global,  1/2", color
+Model_12 = "DCC122M"	;"C0752G13M"      ; cmos, 0752x0480, global,  1/3", mono
+Model_13 = "DCC122C"	;"C0752G13C"      ; cmos, 0752x0480, global,  1/3", color
+Model_15 = "DCC1640C"	;"C1282R13C"      ; cmos, 1280x1024, rolling, 1/3", color
+Model_17 = "DCC1550C"	;"C1601R13C"      ; cmos, 1600x1200, rolling, 1/3", color
+Model_18 = "DCC1223M"	;"C0753G13M"      ; cmos, 0752x0480, global,  1/3", mono,  single board
+Model_19 = "DCC1223C"	;"C0753G13C"      ; cmos, 0752x0480, global,  1/3", color, single board
+Model_22 = "DCC122M"	;"C0754G13M"      ; cmos, 0752x0480, global,  1/3", mono,  plastic housing
+Model_23 = "DCC122C"	;"C0754G13C"      ; cmos, 0752x0480, global,  1/3", color, plastic housing
+Model_25 = "DCC1645C"	;"C1284R13C"      ; cmos, 1280x1024, rolling, 1/3", color, plastic housing
+Model_27 = "DCC1555C"	;"C1604R13C"      ; cmos, 1600x1200, rolling, 1/3", color, plastic housing
+Model_28 = "DCC1545M"	;"C1285R12M"      ; cmos, 1280x1024, rolling, 1/2", mono,  single board
+Model_29 = "DCC1545C"	;"C1285R12C"      ; cmos, 1280x1024, rolling, 1/2", color, single board
+Model_2b = "DCC1455C"	;"C1605R12C"      ; cmos, 1600x1200, rolling, 1/2", color, plastic housing
+Model_2d = "DCC1465C"	;"C2055R12C"      ; cmos, 2048x1536, rolling, 1/2", color, plastic housing
+Model_2e = "DCC1485M"	;"C2595R12M"      ; cmos, 2592x1944, rolling, 1/2", color, plastic housing
+Model_2f = "DCC1485C"	;"C2595R12C"      ; cmos, 2592x1944, rolling, 1/2", color, plastic housing
+Model_30 = "DCC154M"	;"C1280R12M"      ; cmos, 1280x1024, rolling, 1/2", mono
+Model_31 = "DCC154C"	;"C1280R12C"      ; cmos, 1280x1024, rolling, 1/2", color
+Model_32 = "DCC1543M"	;"C1283R12M"      ; cmos, 1280x1024, rolling, 1/2", mono,  single board
+Model_33 = "DCC1543C"	;"C1283R12C"      ; cmos, 1280x1024, rolling, 1/2", color, single board
+Model_35 = "DCC1453C"	;"C1603R12C"      ; cmos, 1600x1200, rolling, 1/2", color, single board
+Model_37 = "DCC1463C"	;"C2053R12C"      ; cmos, 2048x1536, rolling, 1/2", color, single board
+Model_39 = "DCC1483C"	;"C2593R12C"      ; cmos, 2592x1944, rolling, 1/2", color, single board
+Model_3a = "DCC1544M"	;"C1286R12M"      ; cmos, 1280x1024, rolling, 1/2", mono,  single board
+Model_3b = "DCC1544C"	;"C1286R12C"      ; cmos, 1280x1024, rolling, 1/2", color, single board
+Model_3e = "DCC1490M"	;"C3840R12M"      ; cmos, 3840x2748, rolling, 1/2.5", mono
+Model_3f = "DCC1490C"	;"C3840R12C"      ; cmos, 3840x2748, rolling, 1/2.5", color
+Model_41 = "DCC1495C"	;"C3845R12C"      ; cmos, 3840x2748, rolling, 1/2.5", color, plastic housing
+Model_4a = "DCC1120M"	;"C0768R12M"      ; cmos, 0768x0576, rolling, 1/2", mono
+Model_4c = "DCC1490M"	;"C3264R13M"	  ; cmos, 3264x2448, rolling, mono
+Model_4d = "DCC1490C"	;"C3264R13C"      ; cmos, 3264x2448, rolling, color
+Model_50 = "DCC1240M"	;"C1280G12M"	  ; cmos, 1280x1024, global, 1/2", mono
+Model_51 = "DCC1240C"	;"C1280G12C"	  ; cmos, 1280x1024, global, 1/2", color
+Model_52 = "DCC1228M"	;"C0753G13M"	  ; cmos, 0752x0480, global,  1/3", mono,  single board
+Model_54 = "DCC1245M"	;"C1280G12M"      ; cmos, 1280x1024, global, 1/2", mono, plastic housing
+Model_55 = "DCC1245C"	;"C1280G12C"	  ; cmos, 1280x1024, global, 1/2", color, plastic housingModel_80 = "DCU223M"	;"D1024G13M"      ; ccd, 1024x0768, global, 1/3", mono
+Model_81 = "DCU223C"	;"D1024G13C"      ; ccd, 1024x0768, global, 1/3", color
+Model_82 = "DCU241M"	;"D0640G13M"      ; ccd, 0640x0480, global, 1/3", mono
+Model_83 = "DCU241C"	;"D0640G13C"      ; ccd, 0640x0480, global, 1/3", color
+Model_84 = "DCU234M"	;"D1281G12M"      ; ccd, 1280x1024, global, 1/2", mono
+Model_85 = "DCU234C"	;"D1281G12C"      ; ccd, 1280x1024, global, 1/2", color
+Model_86 = "DCU233M"	;"D1024G23M"      ; ccd, 1024x1024, global, 2/3", mono
+Model_87 = "DCU233C"	;"D1024G23C"      ; ccd, 1024x1024, global, 2/3", color
+Model_88 = "DCU221M"	;"D0640G12M"      ; ccd, 0640x0480, global, 1/2", mono
+Model_89 = "DCU221C"	;"D0640G12C"      ; ccd, 0640x0480, global, 1/2", color
+Model_90 = "DCU231M"	;"D0640G14M"      ; ccd, 0640x0480, global, 1/4", mono
+Model_91 = "DCU231C"	;"D0640G14C"      ; ccd, 0640x0480, global, 1/4", color
+Model_92 = "DCU222M"	;"D0768G12M"      ; ccd, 0768x0582, global, 1/2", mono
+Model_93 = "DCU222C"	;"D0768G12C"      ; ccd, 0768x0582, global, 1/2", color
+Model_96 = "DCU224M"	;"D1280G12M"      ; ccd, 1280x1024, global, 1/2", mono
+Model_97 = "DCU224C"	;"D1280G12C"      ; ccd, 1280x1024, global, 1/2", color
+Model_98 = "DCU225M"	;"D1600G12M"      ; ccd, 1600x1200, global, 1/1.8", mono
+Model_99 = "DCU225C"	;"D1600G12C"      ; ccd, 1600x1200, global, 1/1.8", color
+Model_9a = "DCU234M"	;"D1280G12M"      ; ccd, 1280x0960, global, 1/2", mono
+Model_9b = "DCU234C"	;"D1280G12C"      ; ccd, 1280x0960, global, 1/2", color
+Model_9c = "DCU228M"	;"D2448G23M"      ; ccd, 2448x2048, global, 2/3", mono
+Model_9d = "DCU228C"	;"D2448G23C"      ; ccd, 2448x2048, global, 2/3", color
+
+
+Model_start      = "Thorlabs DCx camera series"
+ModelGroup_1_2   = "Thorlabs DCC cmos, 640x480, ers, 1/3 cameras"
+ModelGroup_3_4   = "Thorlabs DCC cmos, 1280x1024, ers, 2/3 cameras"
+ModelGroup_8     = "Thorlabs DCC cmos, 1600x1200, ers, 1/2 cameras"
+ModelGroup_a     = "Thorlabs DCC cmos, 2048x1536, ers, 1/2 cameras"
+ModelGroup_b_c   = "Thorlabs DCC cmos, 2592x1944, ers, 1/2 cameras"
+ModelGroup_10_11 = "Thorlabs DCC cmos, 640x480, gs, 1/2 cameras"
+ModelGroup_12_13 = "Thorlabs DCC cmos, 752x480, gs, 1/3 cameras"
+ModelGroup_15    = "Thorlabs DCC cmos, 1280x1024, ers, 1/3 cameras"
+ModelGroup_17    = "Thorlabs DCC cmos, 1600x1200, ers, 1/3 cameras"
+ModelGroup_18_19 = "Thorlabs DCC cmos, 752x480, gs, 1/3 cameras"
+ModelGroup_22_23 = "Thorlabs DCC cmos, 752x480, gs, 1/3 cameras"
+ModelGroup_25    = "Thorlabs DCC cmos, 1280x1024, ers, 1/3 cameras"
+ModelGroup_27    = "Thorlabs DCC cmos, 1600x1200, ers, 1/3 cameras"
+ModelGroup_28_29 = "Thorlabs DCC cmos, 1280x1024, ers, 1/2 cameras"
+ModelGroup_2b    = "Thorlabs DCC cmos, 1600x1200, ers, 1/2 cameras"
+ModelGroup_2d    = "Thorlabs DCC cmos, 2048x1536, ers, 1/2 cameras"
+ModelGroup_2f    = "Thorlabs DCC cmos, 2592x1944, ers, 1/2 cameras"
+ModelGroup_30_31 = "Thorlabs DCC cmos, 1280x1024, ers, 1/2 cameras"
+ModelGroup_32_33 = "Thorlabs DCC cmos, 1280x1024, ers, 1/2 cameras"
+ModelGroup_35    = "Thorlabs DCC cmos, 1600x1200, ers, 1/2 cameras"
+ModelGroup_37    = "Thorlabs DCC cmos, 2048x1536, ers, 1/2 cameras"
+ModelGroup_39    = "Thorlabs DCC cmos, 2592x1944, ers, 1/2 cameras"
+ModelGroup_3a_3b = "Thorlabs DCC cmos, 1280x1024, ers, 1/2 cameras"
+ModelGroup_3e_3f = "Thorlabs DCC cmos, 3840x2748, ers, 1/2.5 cameras"
+ModelGroup_41    = "Thorlabs DCC cmos, 3840x2748, ers, 1/2.5 cameras"
+ModelGroup_4a    = "Thorlabs DCC cmos, 0768x0576, ers, 1/2 cameras"
+ModelGroup_4c_4d = "Thorlabs DCC cmos, 3264x2448, ers, 1/3 cameras"
+ModelGroup_50_51 = "Thorlabs DCC cmos, 1280x1024, gs, 1/2 cameras"
+ModelGroup_52    = "Thorlabs DCC cmos, 752x480, gs, 1/3 cameras"
+ModelGroup_54_55 = "Thorlabs DCC cmos, 1280x1024, gs, 1/2 cameras"
+ModelGroup_80_81 = "Thorlabs DCU ccd, 1024x0768, ps, 1/3 cameras"
+ModelGroup_82_83 = "Thorlabs DCU ccd, 640x480, ps, 1/3 cameras"
+ModelGroup_84_85 = "Thorlabs DCU ccd, 1280x1024, ps, 1/2 cameras"
+ModelGroup_86_87 = "Thorlabs DCU ccd, 1024x1024, ps, 2/3 cameras"
+ModelGroup_88_89 = "Thorlabs DCU ccd, 640x480, ps, 1/2 cameras"
+ModelGroup_90_91 = "Thorlabs DCU ccd, 640x480, ps, 1/4 cameras"
+ModelGroup_92_93 = "Thorlabs DCU ccd, 768x582, ps, 1/2 cameras"
+ModelGroup_96_97 = "Thorlabs DCU ccd, 1280x1024, ps, 1/2 cameras"
+ModelGroup_98_99 = "Thorlabs DCU ccd, 1600x1200, ps, 1/1.8 cameras"
+ModelGroup_9a_9b = "Thorlabs DCU ccd, 1280x0960, ps, 1/2 cameras"
+ModelGroup_9c_9d = "Thorlabs DCU ccd, 2448x2048, ps, 2/3 cameras"
+
+
+;====== OEM strings end ==============================
+
+;==========================================
+; BOOT sections
+;==========================================
+[CAMERA_BOOT.Dev]
+AddReg    = CAMERA_BOOT.AddReg
+CopyFiles = CAMERA_BOOT.CopyFiles.sys, CAMERA_BOOT.CopyFiles.dll
+
+
+[CAMERA_BOOT.Dev.NT]
+AddReg    = CAMERA_BOOT.AddReg
+CopyFiles = CAMERA_BOOT.CopyFiles.sys, CAMERA_BOOT.CopyFiles.dll
+
+
+[CAMERA_BOOT.AddReg]
+HKR,,NTMPDriver,,uc480_boot_64.sys
+HKR,,DevLoader,,*ntkern
+
+
+[CAMERA_BOOT.CopyFiles.sys]
+uc480_64.sys,,,4
+uc480_boot_64.sys,,,4
+
+
+[CAMERA_BOOT.CopyFiles.dll]
+uc480_64.dll,,,4
+uc480_tools_64.dll,,,4
+
+
+[CAMERA_BOOT.DEV.Services] 		
+Addservice = uc480_boot,  0x00000002, CAMERA_BOOT.AddService, CAMERA_BOOT.EventLog.Inst
+
+
+[CAMERA_BOOT.Dev.NT.Services]
+Addservice = uc480_boot,  0x00000002, CAMERA_BOOT.AddService, CAMERA_BOOT.EventLog.Inst
+
+
+[CAMERA_BOOT.AddService]
+DisplayName    =%CAMERA_BOOT.SvcDesc%
+ServiceType    =1
+StartType      =3
+ErrorControl   =1
+ServiceBinary  =%12%\uc480_boot_64.sys
+LoadOrderGroup =Extended Base
+AddReg         =CAMERA_BOOT_SERVICE.AddReg
+
+
+[CAMERA_BOOT_SERVICE.AddReg]
+HKR,"Parameters","Devices",%REG_DWORD%,0
+HKR,"Parameters","EventLogLevel",%REG_DWORD%, 2
+
+
+[CAMERA_BOOT.EventLog.Inst]
+AddReg = CAMERA_BOOT.EventLog.AddReg
+
+
+[CAMERA_BOOT.EventLog.AddReg]
+HKR,,TypesSupported,0x00010001,7
+HKR,,EventMessageFile,0x00020000,"%%SystemRoot%%\System32\IoLogMsg.dll;%%SystemRoot%%\System32\drivers\uc480_boot_64.sys"

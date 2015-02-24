@@ -20,6 +20,7 @@
 #define INVALID_PRESSURE -100
 #define CHANGE_EXPOSURE_TIME 1
 #define CHANGE_FRAME_RATE 2
+#define CHANGE_PIXEL_CLOCK 3
 
 
 class CameraController : public QObject
@@ -53,12 +54,14 @@ private:
     int cameraOn;
     int windowOpen;
     QImage *cameraImage;
+    QTimer *timer;
     void initializeCameraParams();
 
 signals:
     void cameraInitialized();
     void cameraClosed();
     void updateImage(QImage *cameraImage);
+    void updateFrameRate(double frameRate);
     void updateCameraParamsInGui(double *paramList);
 
 public slots:
@@ -71,6 +74,7 @@ public slots:
     void setCameraParams(int param, int value);
 
 private slots:
+    void checkFrameRate();
 
 };
 

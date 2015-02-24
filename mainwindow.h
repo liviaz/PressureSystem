@@ -16,9 +16,11 @@
 #include "ui_mainwindow.h"
 #include "arduinocontroller.h"
 #include "cameracontroller.h"
+#include "uc480_tools.h"
 
 #define CHANGE_EXPOSURE_TIME 1
 #define CHANGE_FRAME_RATE 2
+#define CHANGE_PIXEL_CLOCK 3
 
 namespace Ui {
 class MainWindow;
@@ -52,12 +54,19 @@ class MainWindow : public QMainWindow
         QImage *cameraImagePtr;
         QGraphicsScene *scene;
         qint64 baseTime;
-        double frameRateMin;
-        double frameRateMax;
-        double frameRateCurr;
+
         double exposureTimeMin;
         double exposureTimeMax;
         double exposureTimeCurr;
+        double exposureTimeIncrement;
+
+        double frameRateMinimum;
+        double frameRateMaximum;
+        double frameRateCurr;
+        double frameRateIncrement;
+
+        int totalFrames;
+        int framesDropped;
 
 
     signals:
@@ -83,6 +92,7 @@ class MainWindow : public QMainWindow
         void updateMotorPosition(double value);
         void cameraFinishedInit();
         void cameraFinishedClose();
+        void updateFrameRate(double frameRate);
         void cameraFrameReceived(QImage *imgFromCamera);
         void updateCameraParamsInGui(double *paramList);
 
@@ -103,6 +113,7 @@ class MainWindow : public QMainWindow
         void on_ExposureTimeSlider_sliderReleased();
         void on_FrameRateSlider_sliderReleased();
 
+        void on_PixelClockSlider_sliderReleased();
 };
 
 #endif // MAINWINDOW_H

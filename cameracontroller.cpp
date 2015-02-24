@@ -3,7 +3,8 @@
 #include <QThread>
 #include "QLibrary"
 #include <iostream>
-#include "Camera/uc480.h"
+#include "uc480.h"
+#include "uc480_tools.h"
 #include "windows.h"
 #include "stdafx.h"
 
@@ -57,7 +58,9 @@ void CameraController::closeCamera(){
         is_ExitCamera(*hCam);
     }
 
+
     emit cameraClosed();
+
 }
 
 
@@ -65,6 +68,9 @@ void CameraController::closeCamera(){
 // initialize camera
 void CameraController::initCamera(){
 
+    // initialize timer
+    timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT(checkFrameRate()));
 
     // first make sure that there is a camera and it can be opened
     INT nNumCam;
@@ -182,27 +188,38 @@ void CameraController::startVideo(){
 
             videoOn = 1;
 
-//            // set frame rate and exposure time params in GUI
-//            double paramIn = -1;
-//            double paramIn2 = -1;
-//            double paramIn3 = -1;
-//            double *paramsOut = (double *) calloc(6, sizeof(double));
+            // set pixel clock to 40
+            nRet = is_SetPixelClock(*hCam, 40);
 
-//            is_GetFrameTimeRange(*hCam, &paramIn, &paramIn2, &paramIn3);
-//            double fps_min = 1 / paramIn2;
-//            double fps_max = 1 / paramIn;
-//            memcpy(paramsOut, &fps_min, sizeof(double));
-//            memcpy(paramsOut + 1, &fps_max, sizeof(double));
-//            is_GetFramesPerSecond(*hCam, &paramIn);
-//            memcpy(paramsOut + 2, &paramIn, sizeof(double));
-//            is_Exposure(*hCam, IS_EXPOSURE_CMD_GET_EXPOSURE_RANGE_MIN, &paramIn, sizeof(double));
-//            memcpy(paramsOut + 3, &paramIn, sizeof(double));
-//            is_Exposure(*hCam, IS_EXPOSURE_CMD_GET_EXPOSURE_RANGE_MAX, &paramIn, sizeof(double));
-//            memcpy(paramsOut + 4, &paramIn, sizeof(double));
-//            is_Exposure(*hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, &paramIn, sizeof(double));
-//            memcpy(paramsOut + 5, &paramIn, sizeof(double));
+            // set frame rate and exposure time params in GUI
+            double paramIn = -1;
+            double paramIn2 = -1;
+            double paramIn3 = -1;
+            double *paramsOut = (double *) calloc(7, sizeof(double));
 
-//            emit updateCameraParamsInGui(paramsOut);
+            nRet = is_GetFrameTimeRange(*hCam, &paramIn, &paramIn2, &paramIn3);
+            double fps_min = 1 / paramIn2;
+            double fps_max = 1 / paramIn;
+            memcpy(paramsOut, &fps_min, sizeof(double)); // min fps
+            memcpy(paramsOut + 1, &fps_max, sizeof(double)); // max fps
+
+            nRet = is_GetFramesPerSecond(*hCam, &paramIn);
+            memcpy(paramsOut + 2, &paramIn, sizeof(double)); // avg fps
+
+            nRet = is_GetExposureRange(*hCam, &paramIn, &paramIn2, &paramIn3);
+            memcpy(paramsOut + 3, &paramIn, sizeof(double)); // min time
+            memcpy(paramsOut + 4, &paramIn2, sizeof(double)); // max time
+            memcpy(paramsOut + 6, &paramIn3, sizeof(double)); // exposure increment
+
+            nRet = is_SetExposureTime(*hCam, paramIn, &paramIn2); // set exposure time to min
+            memcpy(paramsOut + 5, &paramIn2, sizeof(double)); // exposure time
+
+
+            emit updateCameraParamsInGui(paramsOut);
+
+            // start timer
+            timer->start(2000);
+
 
         } else {
             qDebug() << "Error when starting video";
@@ -227,6 +244,10 @@ void CameraController::stopVideo(){
             qDebug() << "Error when stopping video";
         }
     }
+
+    if (timer->isActive()){
+        timer->stop();
+    }
 }
 
 
@@ -234,52 +255,62 @@ void CameraController::stopVideo(){
 // set camera params based on user input
 void CameraController::setCameraParams(int param, int value){
 
-//    double *paramsOut = (double *) calloc(6, sizeof(double));
-//    double paramIn;
-//    double paramIn2 = -1;
-//    double paramIn3 = -1;
+    double *paramsOut = (double *) calloc(7, sizeof(double));
+    double paramIn;
+    double paramIn2 = -1;
+    double paramIn3 = -1;
 
-//    /* first, send new param to camera
-//     * then, update camera param ranges in GUI
-//     * paramList is: [frameRateLow, frameRateHigh,
-//     * exposureTimeLow, exposureTimeHigh]
-//     * */
-//    switch (param) {
-//        case CHANGE_EXPOSURE_TIME:
+    /* first, send new param to camera
+     * then, update camera param ranges in GUI
+     * paramList is: [frameRateLow, frameRateHigh, frameRateAvg
+     * exposureTimeLow, exposureTimeHigh, exposureTimeActual, exposureTimeIncrement]
+     * */
+    switch (param) {
+        case CHANGE_EXPOSURE_TIME:
 
-//            // change exposure time
-//            is_Exposure(*hCam, IS_EXPOSURE_CMD_SET_EXPOSURE, &value, sizeof(double));
+            // change exposure time
+            is_SetExposureTime(*hCam, value, &paramIn);
+            memcpy(paramsOut + 5, &paramIn, sizeof(double));
 
-//            is_GetFramesPerSecond(*hCam, &paramIn);
-//            memcpy(paramsOut + 2, &paramIn, sizeof(double));
+            is_GetFramesPerSecond(*hCam, &paramIn);
+            memcpy(paramsOut + 2, &paramIn, sizeof(double));
 
-//            break;
-//        case CHANGE_FRAME_RATE:
+            break;
+        case CHANGE_FRAME_RATE:
 
-//            // change frame rate
-//            is_SetFrameRate(*hCam, value, &paramIn);
-//            memcpy(paramsOut + 2, &paramIn, sizeof(double));
+            // change frame rate
+            is_SetFrameRate(*hCam, value, &paramIn);
+            memcpy(paramsOut + 2, &paramIn, sizeof(double));
 
-//            break;
-//    }
+            break;
+
+        case CHANGE_PIXEL_CLOCK:
+
+            //set pixel clock
+            is_SetPixelClock(*hCam, value);
+
+            is_GetFramesPerSecond(*hCam, &paramIn);
+            memcpy(paramsOut + 2, &paramIn, sizeof(double));
+
+            break;
+
+    }
 
 
-//    // emit signal to update params in GUI
-//    // also make a timer to occasionally update frame rate
-//    is_GetFrameTimeRange(*hCam, &paramIn, &paramIn2, &paramIn3);
-//    double fps_min = 1 / paramIn2;
-//    double fps_max = 1 / paramIn;
-//    memcpy(paramsOut, &fps_min, sizeof(double));
-//    memcpy(paramsOut + 1, &fps_max, sizeof(double));
+    // emit signal to update params in GUI
+    // also make a timer to occasionally update frame rate
+    is_GetFrameTimeRange(*hCam, &paramIn, &paramIn2, &paramIn3);
+    double fps_min = 1 / paramIn2;
+    double fps_max = 1 / paramIn;
+    memcpy(paramsOut, &fps_min, sizeof(double));
+    memcpy(paramsOut + 1, &fps_max, sizeof(double));
 
-//    is_Exposure(*hCam, IS_EXPOSURE_CMD_GET_EXPOSURE_RANGE_MIN, &paramIn, sizeof(double));
-//    memcpy(paramsOut + 3, &paramIn, sizeof(double));
-//    is_Exposure(*hCam, IS_EXPOSURE_CMD_GET_EXPOSURE_RANGE_MAX, &paramIn, sizeof(double));
-//    memcpy(paramsOut + 4, &paramIn, sizeof(double));
-//    is_Exposure(*hCam, IS_EXPOSURE_CMD_GET_EXPOSURE, &paramIn, sizeof(double));
-//    memcpy(paramsOut + 5, &paramIn, sizeof(double));
+    is_GetExposureRange(*hCam, &paramIn, &paramIn2, &paramIn3);
+    memcpy(paramsOut + 3, &paramIn, sizeof(double)); // min time
+    memcpy(paramsOut + 4, &paramIn2, sizeof(double)); // max time
+    memcpy(paramsOut + 6, &paramIn3, sizeof(double)); // exposure increment
 
-//    emit updateCameraParamsInGui(paramsOut);
+    emit updateCameraParamsInGui(paramsOut);
 }
 
 
@@ -315,6 +346,14 @@ void CameraController::optimizeCameraParams(){
 
 
 
+// periodically check frame rate
+void CameraController::checkFrameRate(){
+
+    double paramIn = -1;
+    is_GetFramesPerSecond(*hCam, &paramIn);
+    emit updateFrameRate(paramIn);
+
+}
 
 
 
