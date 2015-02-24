@@ -53,6 +53,8 @@ MainWindow::MainWindow(QWidget *parent) :
     framesDropped = 0;
     currPixmapItem = NULL;
     rectAdded = FALSE;
+    ROIselected = FALSE;
+    skipCurrFrame = false;
 
     imageRoi = new RoiRect(50, 50, 1180, 924); // initialize ROI bounding box;
     scene = new QGraphicsScene(this);
@@ -116,6 +118,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->OptimizeParamsButton, SIGNAL(clicked()), cc, SLOT(optimizeCameraParams()));
     connect(this, SIGNAL(setCameraParams(int,int)), cc, SLOT(setCameraParams(int,int)));
     connect(cc, SIGNAL(updateFrameRate(double)), this, SLOT(updateFrameRate(double)));
+    connect(this, SIGNAL(changeCameraROI(QRectF)), cc, SLOT(changeCameraROI(QRectF)));
     connect(cc, SIGNAL(updateCameraParamsInGui(double *)), this, SLOT(updateCameraParamsInGui(double *)));
     connect(this, SIGNAL(closeCamera()), cc, SLOT(closeCamera())); // tell camera to close
     connect(cc, SIGNAL(cameraClosed()), this, SLOT(cameraFinishedClose())); // wait until camera is finished closing
@@ -538,7 +541,7 @@ void MainWindow::cameraFrameReceived(QImage* imgFromCamera){
 
     cameraImagePtr = imgFromCamera;
 
-    if (cameraOpen){
+    if (cameraOpen && videoOpen){
 
 
         if (currPixmapItem == NULL){
@@ -556,10 +559,11 @@ void MainWindow::cameraFrameReceived(QImage* imgFromCamera){
         ui->cameraImageDisplay->setScene(scene);
         ui->cameraImageDisplay->fitInView(scene->itemsBoundingRect(),
                                           Qt::KeepAspectRatio);
-        ui->cameraImageDisplay->repaint();
+        //ui->cameraImageDisplay->repaint();
 
         qint64 currTime = QDateTime::currentMSecsSinceEpoch();
-        qDebug() << "frame msecs: " << currTime - baseTime;
+        qint64 frameMsec = currTime - baseTime;
+        qDebug() << "frame msecs: " << frameMsec;
         baseTime = currTime;
 
         totalFrames++;
@@ -659,9 +663,6 @@ void MainWindow::on_PixelClockSlider_sliderReleased()
 
 
 
-
-
-
 /* update camera param ranges in GUI
  * paramList is: [frameRateLow, frameRateHigh, frameRateCurr,
  * exposureTimeLow, exposureTimeHigh, exposureTimeCurr,
@@ -749,10 +750,6 @@ void MainWindow::updateCameraParamsInGui(double *paramList){
 
 
 
-
-
-
-
 // updateFrameRate in GUI only
 void MainWindow::updateFrameRate(double frameRate){
 
@@ -767,10 +764,21 @@ void MainWindow::updateFrameRate(double frameRate){
 
 
 
+// crop ROI
+void MainWindow::on_ZoomToSelectionButton_clicked()
+{
+    ROIselected = TRUE;
+    imageRoi->setVisible(false);
+    emit changeCameraROI(imageRoi->boundingRect());
+}
 
 
-
-
+void MainWindow::on_ClearSelectionButton_clicked()
+{
+    ROIselected = FALSE;
+    imageRoi->setVisible(true);
+    emit changeCameraROI(QRectF(0, 0, 1280, 1024));
+}
 
 
 

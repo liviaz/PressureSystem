@@ -72,6 +72,7 @@ public slots:
     void eventSignaled(HANDLE h);
     void optimizeCameraParams();
     void setCameraParams(int param, int value);
+    void changeCameraROI(QRectF boundingROI);
 
 private slots:
     void checkFrameRate();

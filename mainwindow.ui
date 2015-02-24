@@ -838,7 +838,7 @@ z-index: 2;</string>
      <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
     </property>
     <property name="text">
-     <string>Clear Selection</string>
+     <string>Full Resolution</string>
     </property>
    </widget>
    <widget class="QLabel" name="TotalFramesIndicator">

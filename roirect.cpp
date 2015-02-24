@@ -23,11 +23,11 @@ RoiRect::RoiRect(int xTopLeft, int yTopLeft, int width, int height)
 
 }
 
+
 RoiRect::~RoiRect()
 {
 
 }
-
 
 // resize through command
 void RoiRect::changeSize(int xTopLeft, int yTopLeft, int width, int height)
@@ -51,7 +51,6 @@ QRectF RoiRect::boundingRect() const
 }
 
 
-
 void RoiRect::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
 
@@ -62,6 +61,7 @@ void RoiRect::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, Q
     painter->drawRect(rect);
 
 }
+
 
 void RoiRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -78,12 +78,14 @@ void RoiRect::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 }
 
+
 void RoiRect::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
 
     QGraphicsItem::mouseReleaseEvent(event);
     update();
 }
+
 
 void RoiRect::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
@@ -153,7 +155,7 @@ void RoiRect::hoverEnterEvent(QGraphicsSceneHoverEvent *event){
 
     // check where cursor enters
     hoverState = getCursorLocation(xEnter, yEnter);
-    qDebug() << "cursorEnterLocation: " << hoverState;
+//    qDebug() << "cursorEnterLocation: " << hoverState;
 
     switch (hoverState){
 
@@ -194,7 +196,7 @@ void RoiRect::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 
     // check where cursor enters
     hoverState = getCursorLocation(xCurr, yCurr);
-    qDebug() << "cursorEnterLocation: " << hoverState;
+//    qDebug() << "cursorEnterLocation: " << hoverState;
 
     switch (hoverState){
 
@@ -230,9 +232,9 @@ int RoiRect::getCursorLocation(int xEnter, int yEnter)
 
     int thresh = 20;
 
-    qDebug() << "mouse enter (x,y): " << xEnter << ", " << yEnter;
-    qDebug() << "rect boundaries: (xLeft, yTop, xRight, yBottom): " <<
-                xTopLeft << "," << yTopLeft << "," << xBottomRight << "," << yBottomRight;
+//    qDebug() << "mouse enter (x,y): " << xEnter << ", " << yEnter;
+//    qDebug() << "rect boundaries: (xLeft, yTop, xRight, yBottom): " <<
+//                xTopLeft << "," << yTopLeft << "," << xBottomRight << "," << yBottomRight;
 
     // check if cursor close to left
     if (qAbs(xEnter - xTopLeft) < thresh){

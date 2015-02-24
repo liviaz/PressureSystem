@@ -58,6 +58,7 @@ class MainWindow : public QMainWindow
         QGraphicsPixmapItem *currPixmapItem;
         RoiRect *imageRoi;
         BOOL rectAdded;
+        BOOL ROIselected;
 
 
         qint64 baseTime;
@@ -71,6 +72,7 @@ class MainWindow : public QMainWindow
         double frameRateIncrement;
         int totalFrames;
         int framesDropped;
+        bool skipCurrFrame;
 
     signals:
         void setValve(int value);
@@ -80,6 +82,7 @@ class MainWindow : public QMainWindow
         void startCameraDisplay();
         void stopCameraDisplay();
         void setCameraParams(int param, int value);
+        void changeCameraROI(QRectF boundingROI);
         void initCamera();
         void closeCamera();
 
@@ -116,6 +119,8 @@ class MainWindow : public QMainWindow
         void on_ExposureTimeSlider_sliderReleased();
         void on_FrameRateSlider_sliderReleased();
         void on_PixelClockSlider_sliderReleased();
+        void on_ZoomToSelectionButton_clicked();
+        void on_ClearSelectionButton_clicked();
 };
 
 #endif // MAINWINDOW_H
