@@ -17,6 +17,7 @@
 #include "arduinocontroller.h"
 #include "cameracontroller.h"
 #include "uc480_tools.h"
+#include "roirect.h"
 
 #define CHANGE_EXPOSURE_TIME 1
 #define CHANGE_FRAME_RATE 2
@@ -27,6 +28,7 @@ class MainWindow;
 }
 
 class MotorController;
+class RoiRect;
 
 class MainWindow : public QMainWindow
 {
@@ -53,21 +55,22 @@ class MainWindow : public QMainWindow
         int videoStartable;
         QImage *cameraImagePtr;
         QGraphicsScene *scene;
-        qint64 baseTime;
+        QGraphicsPixmapItem *currPixmapItem;
+        RoiRect *imageRoi;
+        BOOL rectAdded;
 
+
+        qint64 baseTime;
         double exposureTimeMin;
         double exposureTimeMax;
         double exposureTimeCurr;
         double exposureTimeIncrement;
-
         double frameRateMinimum;
         double frameRateMaximum;
         double frameRateCurr;
         double frameRateIncrement;
-
         int totalFrames;
         int framesDropped;
-
 
     signals:
         void setValve(int value);
@@ -112,7 +115,6 @@ class MainWindow : public QMainWindow
         void on_InitCameraButton_clicked();
         void on_ExposureTimeSlider_sliderReleased();
         void on_FrameRateSlider_sliderReleased();
-
         void on_PixelClockSlider_sliderReleased();
 };
 

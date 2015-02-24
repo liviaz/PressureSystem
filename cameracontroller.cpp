@@ -211,7 +211,7 @@ void CameraController::startVideo(){
             memcpy(paramsOut + 4, &paramIn2, sizeof(double)); // max time
             memcpy(paramsOut + 6, &paramIn3, sizeof(double)); // exposure increment
 
-            nRet = is_SetExposureTime(*hCam, paramIn, &paramIn2); // set exposure time to min
+            nRet = is_SetExposureTime(*hCam, paramIn, &paramIn3); // set exposure time to min
             memcpy(paramsOut + 5, &paramIn2, sizeof(double)); // exposure time
 
 

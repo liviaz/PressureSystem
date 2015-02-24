@@ -44,13 +44,15 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     motorcontroller.cpp \
     arduinocontroller.cpp \
-    cameracontroller.cpp
+    cameracontroller.cpp \
+    roirect.cpp
 
 HEADERS  += mainwindow.h \
     motorcontroller.h \
     FirgelliMotor/mpusbapi.h \
     arduinocontroller.h \
-    cameracontroller.h
+    cameracontroller.h \
+    roirect.h
 
 
 FORMS    += mainwindow.ui

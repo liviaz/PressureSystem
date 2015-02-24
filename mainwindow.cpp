@@ -14,6 +14,7 @@
 #include <QGraphicsScene>
 #include <QPixmap>
 #include <QGraphicsPixmapItem>
+#include "roirect.h"
 
 // 2 global variables
 double pressure;
@@ -50,6 +51,11 @@ MainWindow::MainWindow(QWidget *parent) :
     exposureTimeIncrement = 1;
     totalFrames = 0;
     framesDropped = 0;
+    currPixmapItem = NULL;
+    rectAdded = FALSE;
+
+    imageRoi = new RoiRect(50, 50, 1180, 924); // initialize ROI bounding box;
+    scene = new QGraphicsScene(this);
 
     // setup UI
     ui->setupUi(this);
@@ -70,6 +76,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->ExposureTimeSlider->setValue(10);
     ui->PixelClockIndicator->setText("40");
     ui->PixelClockSlider->setValue(40);
+
+//    painter = new QPainter(ui->cameraImageDisplay);
+
 
     // start motorController, arduinoController, and cameraController
     mc = new MotorController();
@@ -530,13 +539,19 @@ void MainWindow::cameraFrameReceived(QImage* imgFromCamera){
     cameraImagePtr = imgFromCamera;
 
     if (cameraOpen){
-        // attempt some sort of memory cleanup
-        if (scene != NULL){
-            delete scene;
+
+
+        if (currPixmapItem == NULL){
+            currPixmapItem = scene->addPixmap(QPixmap::fromImage(*cameraImagePtr));
+        } else {
+            currPixmapItem->setPixmap(QPixmap::fromImage(*cameraImagePtr));
         }
 
-        scene = new QGraphicsScene(this);
-        scene->addPixmap(QPixmap::fromImage(*cameraImagePtr));
+        if (!rectAdded){
+            scene->addItem(imageRoi);
+            rectAdded = TRUE;
+        }
+
         scene->setSceneRect(cameraImagePtr->rect());
         ui->cameraImageDisplay->setScene(scene);
         ui->cameraImageDisplay->fitInView(scene->itemsBoundingRect(),
@@ -596,6 +611,7 @@ void MainWindow::on_StartVideoButton_clicked()
 
 
 
+
 // if camera thread is running, initialize camera
 void MainWindow::on_InitCameraButton_clicked()
 {
@@ -608,6 +624,7 @@ void MainWindow::on_InitCameraButton_clicked()
 
 
 
+
 /* change exposure time when slider released */
 void MainWindow::on_ExposureTimeSlider_sliderReleased()
 {
@@ -615,6 +632,7 @@ void MainWindow::on_ExposureTimeSlider_sliderReleased()
     double valueOut = exposureTimeMin + valuePct * exposureTimeIncrement;
     emit setCameraParams(CHANGE_EXPOSURE_TIME, valueOut);
 }
+
 
 
 /* change frame rate when slider released
@@ -628,6 +646,8 @@ void MainWindow::on_FrameRateSlider_sliderReleased()
     emit setCameraParams(CHANGE_FRAME_RATE, valueOut);
 }
 
+
+
 // change pixel clock
 void MainWindow::on_PixelClockSlider_sliderReleased()
 {
@@ -636,6 +656,8 @@ void MainWindow::on_PixelClockSlider_sliderReleased()
     ui->PixelClockIndicator->setText(pixelClockActual);
     emit setCameraParams(CHANGE_PIXEL_CLOCK, ui->PixelClockSlider->value());
 }
+
+
 
 
 
@@ -731,7 +753,6 @@ void MainWindow::updateCameraParamsInGui(double *paramList){
 
 
 
-
 // updateFrameRate in GUI only
 void MainWindow::updateFrameRate(double frameRate){
 
@@ -743,4 +764,15 @@ void MainWindow::updateFrameRate(double frameRate){
     ui->FrameRateSlider->setValue((int) ((frameRateCurr - frameRateMinimum) /
                                          frameRateIncrement));
 }
+
+
+
+
+
+
+
+
+
+
+
 
