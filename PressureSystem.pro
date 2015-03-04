@@ -16,7 +16,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = PressureSystem
 TEMPLATE = app
 
-#INCLUDEPATH += C:/Users/Livia/Desktop/OpenCV/v2410/build/include
+INCLUDEPATH += "C:/Users/Admin/Desktop/opencv/build/include"
 INCLUDEPATH += "C:/Users/Admin/Desktop/Software/PressureSystem/FirgelliMotor"
 INCLUDEPATH += "C:/Users/Admin/Desktop/Software/PressureSystem/Camera"
 
@@ -24,15 +24,15 @@ include("C:/Users/Admin/Desktop/Software/PressureSystem/qextserialport-1.2rc/src
 
 QMAKE_CXXFLAGS += -Wall
 
-#LIBS += -LC:/Users/Livia/Desktop/OpenCV/v2410/build/x86/vc10/lib \
-#    -lopencv_core2410d \
-#    -lopencv_highgui2410d \
-#    -lopencv_imgproc2410d
+LIBS += -LC:/Users/Admin/Desktop/opencv/build/x86/vc10/lib \
+    -lopencv_core2410d \
+    -lopencv_highgui2410d \
+    -lopencv_imgproc2410d
 
-#LIBS += -LC:/Users/Livia/Desktop/OpenCV/v2410/build/x86/vc10/bin \
-#    -lopencv_core2410d \
-#    -lopencv_highgui2410d \
-#    -lopencv_imgproc2410d
+LIBS += -LC:/Users/Admin/Desktop/opencv/build/x86/vc10/bin \
+    -lopencv_core2410d \
+    -lopencv_highgui2410d \
+    -lopencv_imgproc2410d
 
 
 LIBS += "C:/Users/Admin/Desktop/Software/PressureSystem/FirgelliMotor/mpusbapi.lib"
@@ -56,3 +56,6 @@ HEADERS  += mainwindow.h \
 
 
 FORMS    += mainwindow.ui
+
+SUBDIRS += \
+    QTFFmpegWrapper/config.pro

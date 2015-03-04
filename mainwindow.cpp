@@ -17,6 +17,8 @@
 #include <QFileDialog>
 #include "roirect.h"
 
+using namespace cv;
+
 // 2 global variables
 double pressure;
 double motorPosition;
@@ -50,7 +52,15 @@ MainWindow::MainWindow(QWidget *parent) :
     exposureTimeMax = 100;
     exposureTimeCurr = 10;
     exposureTimeIncrement = 1;
+    videoWriter = NULL;
+    recordingVideo = 0;
+    valveOpened = 0;
 
+    // video length timer
+    videoTimer = new QTimer(this);
+    connect(videoTimer, SIGNAL(timeout()), this, SLOT(stopRecording()));
+    currWidth = 0;
+    currHeight = 0;
 
     // ROI related
     currPixmapItem = NULL;
@@ -120,9 +130,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(stopCameraDisplay()), cc, SLOT(stopVideo()));
     connect(cc, SIGNAL(videoStarted()), this, SLOT(videoStarted()));
     connect(cc, SIGNAL(videoStopped()), this, SLOT(videoStopped()));
-    connect(this, SIGNAL(startRecording()), cc, SLOT(startRecording()));
-    connect(this, SIGNAL(stopRecording()), cc, SLOT(stopRecording()));
-    connect(cc, SIGNAL(recordingStarted()), this, SLOT(recordingStarted()));
     connect(cc, SIGNAL(updateImage(QImage*)), this, SLOT(cameraFrameReceived(QImage*))); // update GUI when new frame available
     connect(this, SIGNAL(setCameraParams(int,int)), cc, SLOT(setCameraParams(int,int)));
     connect(cc, SIGNAL(updateFrameRate(double)), this, SLOT(updateFrameRate(double)));
@@ -481,31 +488,30 @@ void MainWindow::balanceFinished(int successful, int flag){
      // if flag is 1, next step is to start recording video
      // and open valve
     } else if (flag == 1){
+
         // 2. start recording video
         // first get file path
+        QString fileName = QFileDialog::getSaveFileName(this,
+             tr("Open Image"), "C:\Users\Admin\Desktop");
+        fileName.append(".avi");
 
-//        QString fileName = QFileDialog::getSaveFileName(this,
-//             tr("Open Image"), "C:\Users\Admin\Desktop");
-//        fileName.append(".avi");
+        //QString fileName = "C:\Users\Admin\Desktop\test.avi";
 
-        emit startRecording();
-        //qDebug() << "filename: " << fileName;
-
-        //cc->startRecording(fileName);
-
-        // 3. open valve
-        emit setValve(1);
-
-        // 4. wait 3 seconds
-        QThread::msleep(3000);
-
-        // 5. stop recording vide
-        emit stopRecording();
-
-        // 6. go back to initial pressure - 0.02 to release embryo
-        emit goToPressure(balancePressureValue - 0.02, 2);
+        cv::Size frameSize(currWidth, currHeight);
+        videoWriter = new VideoWriter(fileName.toStdString(), CV_FOURCC('D', 'I', 'B', ' '),
+                                      frameRateCurr, frameSize, true);
 
 
+
+        qDebug() << "video timer initialized";
+
+        // start grabbing frames for the next 3 seconds
+        if (videoWriter->isOpened()){
+            recordingVideo = 1;
+            valveOpened = 0;
+            videoTimer->start(3000);
+            qDebug() << "video timer started";
+        }
 
      // measurement is done: close valve and re-enable GUI
     } else if (flag == 2){
@@ -523,23 +529,20 @@ void MainWindow::balanceFinished(int successful, int flag){
     }
 }
 
-// continue with measurement only once video is started
-void MainWindow::recordingStarted()
+void MainWindow::stopRecording()
 {
-//    // 3. open valve
-//    emit setValve(1);
 
-//    // 4. wait 3 seconds
-//    QThread::msleep(3000);
+    // 4. stop video and move pressure back
+    recordingVideo = 0;
+    valveOpened = 0;
+    videoTimer->stop();
+    videoWriter->release();
+    videoWriter = NULL;
+    qDebug() << "video timer stopped";
 
-//    // 5. stop recording vide
-//    emit stopRecording();
-
-//    // 6. go back to initial pressure - 0.02 to release embryo
-//    emit goToPressure(balancePressureValue - 0.02, 2);
+    // 5. go back to initial pressure - 0.02 to release embryo
+    emit goToPressure(balancePressureValue - 0.02, 2);
 }
-
-
 
 
 /*
@@ -587,6 +590,31 @@ void MainWindow::cameraFrameReceived(QImage* imgFromCamera){
             scene->addItem(imageRoi);
             imageRoi->setZValue(1);
             imageRoi->setVisible(true);
+        }
+
+        currWidth = cameraImagePtr->width();
+        currHeight = cameraImagePtr->height();
+
+        if (recordingVideo){
+
+            // write frame to video
+            if (videoWriter != NULL){
+
+                Mat tempMat = Mat(currHeight, currWidth, CV_8UC4,
+                                      const_cast<uchar*>(cameraImagePtr->bits()),
+                                      cameraImagePtr->bytesPerLine());
+                videoWriter->write(tempMat);
+
+                qDebug() << "wrote frame to videowriter";
+            }
+
+            // 3. if valve not open yet, open it and wait 3 seconds
+            if (valveOpened == 0){
+                valveOpened = 1;
+                emit setValve(1);
+                qDebug() << "valve set";
+            }
+
         }
 
         scene->setSceneRect(cameraImagePtr->rect());

@@ -349,9 +349,9 @@ void CameraController::eventSignaled(HANDLE h) {
     if (videoOn){
 
         // if recording, add frame to video
-        if (recordingVideo){
-            isavi_AddFrame(*aviID, imageData);
-        } else {
+//        if (recordingVideo){
+//            isavi_AddFrame(*aviID, imageData);
+//        } else {
 
             // copy data from camera memory to class variable QImage cameraImage
             if (cameraImage != NULL){
@@ -360,9 +360,9 @@ void CameraController::eventSignaled(HANDLE h) {
 
             cameraImage = new QImage(reinterpret_cast<uchar *>(imageData), nX, nY, QImage::Format_RGB32);
             emit updateImage(cameraImage);
-        }
-    }
+//        }
 
+    }
 }
 
 
@@ -384,6 +384,7 @@ void CameraController::optimizeCameraParams(){
 
 
 
+
 // periodically check frame rate
 void CameraController::checkFrameRate(){
 
@@ -392,6 +393,7 @@ void CameraController::checkFrameRate(){
     emit updateFrameRate(paramIn);
 
 }
+
 
 
 // change camera ROI to bounding box specified
@@ -452,6 +454,7 @@ void CameraController::changeCameraROI(QRectF boundingROI)
 }
 
 
+
 // start recording avi
 void CameraController::startRecording()
 {
@@ -485,6 +488,7 @@ void CameraController::startRecording()
     }
 
 }
+
 
 // stop recording avi
 void CameraController::stopRecording()

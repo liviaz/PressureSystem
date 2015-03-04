@@ -18,6 +18,9 @@
 #include "cameracontroller.h"
 #include "uc480_tools.h"
 #include "roirect.h"
+#include "opencv2/highgui/highgui.hpp"
+#include "opencv2/core/core.hpp"
+
 
 #define CHANGE_EXPOSURE_TIME 1
 #define CHANGE_FRAME_RATE 2
@@ -59,6 +62,10 @@ class MainWindow : public QMainWindow
         RoiRect *imageRoi;
         BOOL rectAdded;
         BOOL ROIselected;
+        cv::VideoWriter *videoWriter;
+        int recordingVideo;
+        QTimer *videoTimer;
+        int valveOpened;
 
         qint64 baseTime;
         double exposureTimeMin;
@@ -74,6 +81,8 @@ class MainWindow : public QMainWindow
         int saveY;
         int saveW;
         int saveH;
+        int currWidth;
+        int currHeight;
 
     signals:
         void setValve(int value);
@@ -86,8 +95,8 @@ class MainWindow : public QMainWindow
         void changeCameraROI(QRectF boundingROI);
         void initCamera();
         void closeCamera();
-        void startRecording();
-        void stopRecording();
+//        void startRecording();
+
 
     public slots:
         void motorClosedSlot();
@@ -106,7 +115,7 @@ class MainWindow : public QMainWindow
         void updateCameraParamsInGui(double *paramList);
         void videoStarted();
         void videoStopped();
-        void recordingStarted();
+        void stopRecording();
 
     private slots:
         void on_stopButton_clicked();
