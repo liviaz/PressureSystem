@@ -60,7 +60,6 @@ class MainWindow : public QMainWindow
         BOOL rectAdded;
         BOOL ROIselected;
 
-
         qint64 baseTime;
         double exposureTimeMin;
         double exposureTimeMax;
@@ -70,9 +69,11 @@ class MainWindow : public QMainWindow
         double frameRateMaximum;
         double frameRateCurr;
         double frameRateIncrement;
-        int totalFrames;
-        int framesDropped;
-        bool skipCurrFrame;
+        bool pixmapSet;
+        int saveX;
+        int saveY;
+        int saveW;
+        int saveH;
 
     signals:
         void setValve(int value);
@@ -85,6 +86,8 @@ class MainWindow : public QMainWindow
         void changeCameraROI(QRectF boundingROI);
         void initCamera();
         void closeCamera();
+        void startRecording();
+        void stopRecording();
 
     public slots:
         void motorClosedSlot();
@@ -101,6 +104,9 @@ class MainWindow : public QMainWindow
         void updateFrameRate(double frameRate);
         void cameraFrameReceived(QImage *imgFromCamera);
         void updateCameraParamsInGui(double *paramList);
+        void videoStarted();
+        void videoStopped();
+        void recordingStarted();
 
     private slots:
         void on_stopButton_clicked();

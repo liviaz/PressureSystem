@@ -14,6 +14,7 @@
 #include <QGraphicsScene>
 #include <QPixmap>
 #include <QGraphicsPixmapItem>
+#include <QFileDialog>
 #include "roirect.h"
 
 // 2 global variables
@@ -49,23 +50,25 @@ MainWindow::MainWindow(QWidget *parent) :
     exposureTimeMax = 100;
     exposureTimeCurr = 10;
     exposureTimeIncrement = 1;
-    totalFrames = 0;
-    framesDropped = 0;
+
+
+    // ROI related
     currPixmapItem = NULL;
     rectAdded = FALSE;
     ROIselected = FALSE;
-    skipCurrFrame = false;
-
-    imageRoi = new RoiRect(50, 50, 1180, 924); // initialize ROI bounding box;
+    pixmapSet = false;
+    imageRoi = NULL; // initialize ROI bounding box;
     scene = new QGraphicsScene(this);
+    saveX = 50;
+    saveY = 50;
+    saveW = 1180;
+    saveH = 924;
 
     // setup UI
     ui->setupUi(this);
     ui->balancePressureDouble->setValue(balancePressureValue);
     ui->measurePressureDouble->setValue(measurePressureValue);
     ui->valveButton->setText("OPEN VALVE");
-    ui->BoardStatusLabel->setText("CLOSED");
-    ui->ArduinoStatusLabel->setText("CLOSED");
     ui->horizontalSlider->setMaximum(MAX_STROKE);
     ui->actualPressure->setText("+0.000 psi");
     ui->balanceButton->setEnabled(false);
@@ -78,8 +81,9 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->ExposureTimeSlider->setValue(10);
     ui->PixelClockIndicator->setText("40");
     ui->PixelClockSlider->setValue(40);
-
-//    painter = new QPainter(ui->cameraImageDisplay);
+    ui->ZoomToSelectionButton->setEnabled(false);
+    ui->ClearSelectionButton->setEnabled(false);
+    ui->AutoExposureButton->setEnabled(false);
 
 
     // start motorController, arduinoController, and cameraController
@@ -114,8 +118,12 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(cc, SIGNAL(cameraInitialized()), this, SLOT(cameraFinishedInit())); // wait until camera has finished init
     connect(this, SIGNAL(startCameraDisplay()), cc, SLOT(startVideo()));
     connect(this, SIGNAL(stopCameraDisplay()), cc, SLOT(stopVideo()));
+    connect(cc, SIGNAL(videoStarted()), this, SLOT(videoStarted()));
+    connect(cc, SIGNAL(videoStopped()), this, SLOT(videoStopped()));
+    connect(this, SIGNAL(startRecording()), cc, SLOT(startRecording()));
+    connect(this, SIGNAL(stopRecording()), cc, SLOT(stopRecording()));
+    connect(cc, SIGNAL(recordingStarted()), this, SLOT(recordingStarted()));
     connect(cc, SIGNAL(updateImage(QImage*)), this, SLOT(cameraFrameReceived(QImage*))); // update GUI when new frame available
-    connect(ui->OptimizeParamsButton, SIGNAL(clicked()), cc, SLOT(optimizeCameraParams()));
     connect(this, SIGNAL(setCameraParams(int,int)), cc, SLOT(setCameraParams(int,int)));
     connect(cc, SIGNAL(updateFrameRate(double)), this, SLOT(updateFrameRate(double)));
     connect(this, SIGNAL(changeCameraROI(QRectF)), cc, SLOT(changeCameraROI(QRectF)));
@@ -153,6 +161,11 @@ MainWindow::~MainWindow()
     // close LAC port
     if (motorOpen){
         mc->closePort();
+    }
+
+    if (imageRoi != NULL){
+        delete imageRoi;
+        imageRoi = NULL;
     }
 
     if (cameraOpen){
@@ -200,14 +213,9 @@ void MainWindow::on_stopButton_clicked()
         mc->closePort();
     }
 
-    if (videoOpen){
-        emit stopCameraDisplay();
-        ui->StartVideoButton->setText("STOP VIDEO");
-        videoOpen = 0;
-    }
-
     ui->statusLabel->setText("Stopped");
 }
+
 
 
 //on_startButton_clicked: open and set up serial port
@@ -231,7 +239,6 @@ void MainWindow::on_startButton_clicked()
 
 // slot to signal arduino port closed
 void MainWindow::arduinoClosedSlot(){
-    ui->ArduinoStatusLabel->setText("CLOSED");
     portOpen = 0;
     pressure = 0;
 
@@ -248,7 +255,6 @@ void MainWindow::arduinoClosedSlot(){
 
 // slot to signal arduino port open
 void MainWindow::arduinoOpenSlot(){
-    ui->ArduinoStatusLabel->setText("OPEN");
     portOpen = 1;
 
     ui->stopButton->setEnabled(true);
@@ -261,13 +267,11 @@ void MainWindow::arduinoOpenSlot(){
 
 
 void MainWindow::arduinoReadySlot(){
-    ui->ArduinoStatusLabel->setText("READY TO OPEN");
     arduinoStartable = 1;
 }
 
 
 void MainWindow::motorReadySlot(){
-    ui->BoardStatusLabel->setText("READY TO OPEN");
     motorStartable = 1;
 }
 
@@ -294,19 +298,15 @@ void MainWindow::pressureUpdatedSlot(){
  * ************************************ */
 
 
-
-
 // slot to signify LAC port is closed
 void MainWindow::motorClosedSlot(){
     motorOpen = 0;
-    ui->BoardStatusLabel->setText("CLOSED");
 }
 
 
 // slot to signify LAC port is open
 void MainWindow::motorOpenSlot(){
     motorOpen = 1;
-    ui->BoardStatusLabel->setText("OPEN");
 }
 
 
@@ -416,7 +416,7 @@ void MainWindow::on_initializeButton_clicked()
     emit setMotorPosition(voltageToWrite);
 
     // wait until move is done, then close vent valve
-    QThread::sleep(5);
+    QThread::sleep(1);
     ui->ventButton->setText("VENT");
     ui->ventButton->setChecked(0);
     emit setVent(0);
@@ -482,6 +482,16 @@ void MainWindow::balanceFinished(int successful, int flag){
      // and open valve
     } else if (flag == 1){
         // 2. start recording video
+        // first get file path
+
+//        QString fileName = QFileDialog::getSaveFileName(this,
+//             tr("Open Image"), "C:\Users\Admin\Desktop");
+//        fileName.append(".avi");
+
+        emit startRecording();
+        //qDebug() << "filename: " << fileName;
+
+        //cc->startRecording(fileName);
 
         // 3. open valve
         emit setValve(1);
@@ -489,10 +499,13 @@ void MainWindow::balanceFinished(int successful, int flag){
         // 4. wait 3 seconds
         QThread::msleep(3000);
 
-        // 5. stop recording video
+        // 5. stop recording vide
+        emit stopRecording();
 
         // 6. go back to initial pressure - 0.02 to release embryo
         emit goToPressure(balancePressureValue - 0.02, 2);
+
+
 
      // measurement is done: close valve and re-enable GUI
     } else if (flag == 2){
@@ -509,6 +522,24 @@ void MainWindow::balanceFinished(int successful, int flag){
 
     }
 }
+
+// continue with measurement only once video is started
+void MainWindow::recordingStarted()
+{
+//    // 3. open valve
+//    emit setValve(1);
+
+//    // 4. wait 3 seconds
+//    QThread::msleep(3000);
+
+//    // 5. stop recording vide
+//    emit stopRecording();
+
+//    // 6. go back to initial pressure - 0.02 to release embryo
+//    emit goToPressure(balancePressureValue - 0.02, 2);
+}
+
+
 
 
 /*
@@ -543,33 +574,30 @@ void MainWindow::cameraFrameReceived(QImage* imgFromCamera){
 
     if (cameraOpen && videoOpen){
 
-
-        if (currPixmapItem == NULL){
+        if (pixmapSet == false){
+            pixmapSet = true;
             currPixmapItem = scene->addPixmap(QPixmap::fromImage(*cameraImagePtr));
         } else {
             currPixmapItem->setPixmap(QPixmap::fromImage(*cameraImagePtr));
         }
 
+        // add imageRoi just the first time
         if (!rectAdded){
-            scene->addItem(imageRoi);
             rectAdded = TRUE;
+            scene->addItem(imageRoi);
+            imageRoi->setZValue(1);
+            imageRoi->setVisible(true);
         }
 
         scene->setSceneRect(cameraImagePtr->rect());
         ui->cameraImageDisplay->setScene(scene);
         ui->cameraImageDisplay->fitInView(scene->itemsBoundingRect(),
                                           Qt::KeepAspectRatio);
-        //ui->cameraImageDisplay->repaint();
 
         qint64 currTime = QDateTime::currentMSecsSinceEpoch();
         qint64 frameMsec = currTime - baseTime;
         qDebug() << "frame msecs: " << frameMsec;
         baseTime = currTime;
-
-        totalFrames++;
-        QString totalFramesS;
-        totalFramesS.sprintf("%d", totalFrames);
-        ui->TotalFramesIndicator->setText(totalFramesS);
 
     }
 }
@@ -579,7 +607,9 @@ void MainWindow::cameraFrameReceived(QImage* imgFromCamera){
 // signifies that camera is done initializing
 void MainWindow::cameraFinishedInit(){
     cameraOpen = 1;
+    cameraClosable = 0;
     ui->StartVideoButton->setEnabled(true);
+    ui->InitCameraButton->setEnabled(false);
 }
 
 
@@ -601,19 +631,53 @@ void MainWindow::on_StartVideoButton_clicked()
 {
     // either start or stop video depending on state at time of click
     if (videoStartable && cameraOpen && !videoOpen){
-        videoOpen = 1;
+
+        imageRoi = new RoiRect(50, 50, 1180, 924);
+        scene->clear();
+
         emit startCameraDisplay();
+        videoOpen = 1;
+        ui->ResolutionIndicator->setText("1280 x 1024");
         ui->StartVideoButton->setText("Stop Video");
+        ui->ZoomToSelectionButton->setEnabled(true);
+        ui->ClearSelectionButton->setEnabled(true);
+        ui->AutoExposureButton->setEnabled(true);
+
 
     } else {
+
         videoOpen = 0;
+        scene->clear();
+        imageRoi = NULL;
+        currPixmapItem = NULL;
+        rectAdded = false;
+        pixmapSet = false;
+
         emit stopCameraDisplay();
         ui->StartVideoButton->setText("Start Video");
+        ui->ZoomToSelectionButton->setEnabled(false);
+        ui->ClearSelectionButton->setEnabled(false);
+        ui->AutoExposureButton->setEnabled(false );
 
     }
 }
 
 
+void MainWindow::videoStarted()
+{
+
+    videoOpen = 1;
+    if (!ROIselected){
+        scene->addItem(imageRoi);
+    }
+}
+
+
+
+void MainWindow::videoStopped()
+{
+
+}
 
 
 // if camera thread is running, initialize camera
@@ -767,18 +831,70 @@ void MainWindow::updateFrameRate(double frameRate){
 // crop ROI
 void MainWindow::on_ZoomToSelectionButton_clicked()
 {
-    ROIselected = TRUE;
-    imageRoi->setVisible(false);
-    emit changeCameraROI(imageRoi->boundingRect());
+
+    QRectF boundingROI = imageRoi->boundingRect();
+    saveX = imageRoi->xTopLeft;
+    saveY = imageRoi->yTopLeft;
+    saveW = imageRoi->width;
+    saveH = imageRoi->height;
+
+    // stop video
+    videoOpen = 0;
+    scene->clear();
+    imageRoi = NULL;
+    currPixmapItem = NULL;
+    rectAdded = true;
+    pixmapSet = false;
+    emit stopCameraDisplay();
+
+    // resize ROI
+    emit changeCameraROI(boundingROI);
+
+    // restart video with no bounding rect
+    scene->clear();
+    emit startCameraDisplay();
+    videoOpen = 1;
+
+    QString currResolution;
+    currResolution.sprintf("%d x %d", saveW, saveH);
+    ui->ResolutionIndicator->setText(currResolution);
+
 }
 
 
+
+// un-crop ROI
 void MainWindow::on_ClearSelectionButton_clicked()
 {
-    ROIselected = FALSE;
-    imageRoi->setVisible(true);
-    emit changeCameraROI(QRectF(0, 0, 1280, 1024));
+
+    QRectF boundingROI = QRectF(0, 0, 1280, 1024);
+
+    // stop video
+    videoOpen = 0;
+    scene->clear();
+    imageRoi = NULL;
+    currPixmapItem = NULL;
+    rectAdded = false;
+    pixmapSet = false;
+    emit stopCameraDisplay();
+
+    // resize ROI
+    emit changeCameraROI(boundingROI);
+
+    // restart video
+    imageRoi = new RoiRect(saveX, saveY, saveW, saveH);
+    scene->clear();
+    emit startCameraDisplay();
+    videoOpen = 1;
+
+    ui->ResolutionIndicator->setText("1280 x 1024");
 }
+
+
+
+
+
+
 
 
 

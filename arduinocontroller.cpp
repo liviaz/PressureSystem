@@ -42,7 +42,7 @@ void ArduinoController::openPort(){
 
 
     // setup serial port
-    port = new QextSerialPort("COM8");
+    port = new QextSerialPort("COM3");
     connect(port, SIGNAL(readyRead()), this, SLOT(onDataAvailable()));
     port->open(QIODevice::ReadWrite);
 

@@ -16,28 +16,28 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = PressureSystem
 TEMPLATE = app
 
-INCLUDEPATH += C:/Users/Livia/Desktop/OpenCV/v2410/build/include
-INCLUDEPATH += "C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSystem/FirgelliMotor"
-INCLUDEPATH += "C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSystem/Camera"
+#INCLUDEPATH += C:/Users/Livia/Desktop/OpenCV/v2410/build/include
+INCLUDEPATH += "C:/Users/Admin/Desktop/Software/PressureSystem/FirgelliMotor"
+INCLUDEPATH += "C:/Users/Admin/Desktop/Software/PressureSystem/Camera"
 
-include("C:/Users/Livia/Desktop/IVF/Code/sample code/qextserialport-1.2rc/qextserialport-1.2rc/src/qextserialport.pri")
+include("C:/Users/Admin/Desktop/Software/PressureSystem/qextserialport-1.2rc/src/qextserialport.pri")
 
 QMAKE_CXXFLAGS += -Wall
 
-LIBS += -LC:/Users/Livia/Desktop/OpenCV/v2410/build/x86/vc10/lib \
-    -lopencv_core2410d \
-    -lopencv_highgui2410d \
-    -lopencv_imgproc2410d
+#LIBS += -LC:/Users/Livia/Desktop/OpenCV/v2410/build/x86/vc10/lib \
+#    -lopencv_core2410d \
+#    -lopencv_highgui2410d \
+#    -lopencv_imgproc2410d
 
-LIBS += -LC:/Users/Livia/Desktop/OpenCV/v2410/build/x86/vc10/bin \
-    -lopencv_core2410d \
-    -lopencv_highgui2410d \
-    -lopencv_imgproc2410d
+#LIBS += -LC:/Users/Livia/Desktop/OpenCV/v2410/build/x86/vc10/bin \
+#    -lopencv_core2410d \
+#    -lopencv_highgui2410d \
+#    -lopencv_imgproc2410d
 
 
-LIBS += "C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSystem/FirgelliMotor/mpusbapi.lib"
-LIBS += "C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSystem/Camera/uc480.lib"
-LIBS += "C:/Users/Livia/Desktop/IVF/Code/sample code/PressureSystem/PressureSystem/Camera/uc480_tools.lib"
+LIBS += "C:/Users/Admin/Desktop/Software/PressureSystem/FirgelliMotor/mpusbapi.lib"
+LIBS += "C:/Users/Admin/Desktop/Software/PressureSystem/Camera/uc480.lib"
+LIBS += "C:/Users/Admin/Desktop/Software/PressureSystem/Camera/uc480_tools.lib"
 
 
 SOURCES += main.cpp \

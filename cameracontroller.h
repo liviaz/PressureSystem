@@ -4,8 +4,8 @@
 #include <QObject>
 #include <QImage>
 #include <QString>
-#include "opencv2/core/core.hpp"
-#include "opencv2/highgui/highgui.hpp"
+//#include "opencv2/core/core.hpp"
+//#include "opencv2/highgui/highgui.hpp"
 #include <QTimer>
 #include "windows.h"
 #include "Camera/uc480.h"
@@ -48,6 +48,9 @@ private:
     QWinEventNotifier *notifier;
     INT maxPixelClock;
     double maxFrameRate;
+    INT *aviID;
+    INT xOffset;
+    INT yOffset;
 
     // other variables
     int videoOn;
@@ -55,6 +58,7 @@ private:
     int windowOpen;
     QImage *cameraImage;
     QTimer *timer;
+    int recordingVideo;
     void initializeCameraParams();
 
 signals:
@@ -63,6 +67,10 @@ signals:
     void updateImage(QImage *cameraImage);
     void updateFrameRate(double frameRate);
     void updateCameraParamsInGui(double *paramList);
+    void recordingStarted();
+    void recordingStopped();
+    void videoStarted();
+    void videoStopped();
 
 public slots:
     void initCamera();
@@ -73,6 +81,8 @@ public slots:
     void optimizeCameraParams();
     void setCameraParams(int param, int value);
     void changeCameraROI(QRectF boundingROI);
+    void startRecording();
+    void stopRecording();
 
 private slots:
     void checkFrameRate();

@@ -16,6 +16,7 @@ CameraController::CameraController(QObject *parent) :
     windowOpen = 0;
     videoOn = 0;
     cameraOn = 0;
+    recordingVideo = 0;
     cameraImage = NULL;
     imageData = NULL;
     memoryID = 0;
@@ -39,20 +40,21 @@ void CameraController::closeCamera(){
     // if video is on, stop video
     if (videoOn){
         videoOn = 0;
+
         nRet = is_StopLiveVideo(*hCam, IS_WAIT);
-        nRet = is_ClearSequence(*hCam);
     }
 
     // if camera is initialized, close it
     if (cameraOn){
 
         // stop events
-        //nRet = is_DisableEvent(*hCam, IS_SET_EVENT_FRAME);
+        nRet = is_DisableEvent(*hCam, IS_SET_EVENT_FRAME);
         nRet = is_ExitEvent(*hCam, IS_SET_EVENT_FRAME);
 
         cameraOn = 0;
         imageData = NULL;
-        is_ExitCamera(*hCam);
+
+        nRet = is_ExitCamera(*hCam);
     }
 
 
@@ -126,6 +128,8 @@ void CameraController::initializeCameraParams(){
 
     nX = sInfo->nMaxWidth;
     nY = sInfo->nMaxHeight;
+    xOffset = 0;
+    yOffset = 0;
     qDebug() << "Max image size: " << nX << " by " << nY << " pixels";
 
     nRet = is_GetColorDepth(*hCam, &nBitsPerPixel, &nColorMode);
@@ -234,6 +238,8 @@ void CameraController::startVideo(){
         qDebug() << "Error: Camera not initialized yet";
     }
 
+    emit videoStarted();
+
 }
 
 
@@ -257,6 +263,7 @@ void CameraController::stopVideo(){
         }
 
         nRet = is_DisableEvent(*hCam, IS_SET_EVENT_FRAME);
+        qDebug() << "Disabled event successfully";
 
         // free image memory
         if (imageData != NULL){
@@ -267,10 +274,7 @@ void CameraController::stopVideo(){
 
     }
 
-
-
-
-
+    emit videoStopped();
 
 }
 
@@ -343,13 +347,20 @@ void CameraController::setCameraParams(int param, int value){
 void CameraController::eventSignaled(HANDLE h) {
 
     if (videoOn){
-        // copy data from camera memory to class variable QImage cameraImage
-        if (cameraImage != NULL){
-            delete cameraImage;
-        }
 
-        cameraImage = new QImage(reinterpret_cast<uchar *>(imageData), nX, nY, QImage::Format_RGB32);
-        emit updateImage(cameraImage);
+        // if recording, add frame to video
+        if (recordingVideo){
+            isavi_AddFrame(*aviID, imageData);
+        } else {
+
+            // copy data from camera memory to class variable QImage cameraImage
+            if (cameraImage != NULL){
+                delete cameraImage;
+            }
+
+            cameraImage = new QImage(reinterpret_cast<uchar *>(imageData), nX, nY, QImage::Format_RGB32);
+            emit updateImage(cameraImage);
+        }
     }
 
 }
@@ -417,6 +428,10 @@ void CameraController::changeCameraROI(QRectF boundingROI)
         y = 1024 - height;
     }
 
+    qDebug() << "old nX, nY: " << nX << ", " << nY;
+
+    // stop video, set AOI, then restart video
+    //stopVideo();
 
     IS_RECT *ROI = new IS_RECT;
     ROI->s32Width = width;
@@ -425,15 +440,61 @@ void CameraController::changeCameraROI(QRectF boundingROI)
     ROI->s32Y = y;
     nX = width;
     nY = height;
-    qDebug() << "nX, nY: " << nX << ", " << nY;
-
-    // stop video, set AOI, then restart video
-    stopVideo();
+    xOffset = x;
+    yOffset = y;
+    qDebug() << "new nX, nY: " << nX << ", " << nY;
 
     nRet = is_AOI(*hCam, IS_AOI_IMAGE_SET_AOI, ROI, sizeof(IS_RECT));
     delete ROI;
 
-    startVideo();
+    //startVideo();
+
+}
+
+
+// start recording avi
+void CameraController::startRecording()
+{
+    qDebug() << "initiating recording";
+
+    // init video
+    aviID = new INT;
+    nRet = isavi_InitAVI(aviID, *hCam);
+
+    // set avi image size
+    int nPitch;
+    nRet = is_GetImageMemPitch(*hCam, &nPitch);
+
+    qDebug() << "nPitch: " << nPitch;
+
+    //INT lineOffset = (nPitch * 8 ) / nBitsPerPixel -  nX /8 * 8; // Width must be multiple of 8
+    nRet = isavi_SetImageSize(*aviID, nColorMode, nX, nY, 0, 0, 0);
+
+
+    // set avi image quality
+    nRet = isavi_SetImageQuality(*aviID, 100);
+
+    // open avi
+    nRet = isavi_OpenAVI(*aviID, NULL);//, fileName.toStdString().c_str());
+
+    if (nRet == IS_SUCCESS){
+        nRet = isavi_StartAVI(*aviID);
+        recordingVideo = 1;
+        qDebug() << "avi started!";
+        //emit recordingStarted();
+    }
+
+}
+
+// stop recording avi
+void CameraController::stopRecording()
+{
+
+    recordingVideo = 0;
+    isavi_StopAVI(*aviID);
+    isavi_CloseAVI(*aviID);
+    isavi_ExitAVI(*aviID);
+    emit recordingStopped();
 
 }
 

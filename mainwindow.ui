@@ -6,57 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1245</width>
-    <height>775</height>
+    <width>1432</width>
+    <height>808</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QPushButton" name="stopButton">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>230</x>
-      <y>570</y>
-      <width>191</width>
-      <height>71</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font: 16pt &quot;MS Sans Serif&quot;;
-color: red;</string>
-    </property>
-    <property name="text">
-     <string>STOP</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="startButton">
-    <property name="geometry">
-     <rect>
-      <x>20</x>
-      <y>570</y>
-      <width>191</width>
-      <height>71</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font: 16pt &quot;MS Sans Serif&quot;;</string>
-    </property>
-    <property name="text">
-     <string>START</string>
-    </property>
-   </widget>
    <widget class="QGraphicsView" name="cameraImageDisplay">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>20</x>
       <y>10</y>
-      <width>651</width>
-      <height>521</height>
+      <width>801</width>
+      <height>681</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -72,10 +36,10 @@ color: red;</string>
    <widget class="QGroupBox" name="pressureBox">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>840</x>
       <y>10</y>
-      <width>561</width>
-      <height>411</height>
+      <width>581</width>
+      <height>401</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -91,8 +55,8 @@ color: red;</string>
      </property>
      <property name="geometry">
       <rect>
-       <x>200</x>
-       <y>200</y>
+       <x>400</x>
+       <y>180</y>
        <width>151</width>
        <height>51</height>
       </rect>
@@ -110,8 +74,8 @@ color: red;</string>
     <widget class="QDoubleSpinBox" name="measurePressureDouble">
      <property name="geometry">
       <rect>
-       <x>380</x>
-       <y>380</y>
+       <x>210</x>
+       <y>270</y>
        <width>129</width>
        <height>22</height>
       </rect>
@@ -147,8 +111,8 @@ color: red;</string>
      </property>
      <property name="geometry">
       <rect>
-       <x>380</x>
-       <y>200</y>
+       <x>400</x>
+       <y>110</y>
        <width>151</width>
        <height>51</height>
       </rect>
@@ -163,9 +127,9 @@ color: red;</string>
     <widget class="QLabel" name="actualPressure">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>380</y>
-       <width>141</width>
+       <x>210</x>
+       <y>130</y>
+       <width>131</width>
        <height>21</height>
       </rect>
      </property>
@@ -182,8 +146,8 @@ color: red;</string>
      </property>
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>200</y>
+       <x>400</x>
+       <y>250</y>
        <width>151</width>
        <height>51</height>
       </rect>
@@ -199,30 +163,14 @@ z-index: 2;</string>
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QLabel" name="BoardStatusHeading">
-     <property name="geometry">
-      <rect>
-       <x>190</x>
-       <y>50</y>
-       <width>141</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
-     </property>
-     <property name="text">
-      <string>Motor Status:</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="balanceButton">
      <property name="enabled">
       <bool>false</bool>
      </property>
      <property name="geometry">
       <rect>
-       <x>200</x>
-       <y>280</y>
+       <x>30</x>
+       <y>180</y>
        <width>151</width>
        <height>51</height>
       </rect>
@@ -237,9 +185,9 @@ z-index: 2;</string>
     <widget class="QLabel" name="PressureLabel">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>360</y>
-       <width>141</width>
+       <x>210</x>
+       <y>110</y>
+       <width>131</width>
        <height>16</height>
       </rect>
      </property>
@@ -256,8 +204,8 @@ z-index: 2;</string>
      </property>
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>280</y>
+       <x>30</x>
+       <y>110</y>
        <width>151</width>
        <height>51</height>
       </rect>
@@ -269,27 +217,11 @@ z-index: 2;</string>
       <string>1. Initialize</string>
      </property>
     </widget>
-    <widget class="QLabel" name="BoardStatusLabel">
-     <property name="geometry">
-      <rect>
-       <x>190</x>
-       <y>70</y>
-       <width>131</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
     <widget class="QLabel" name="MeasurementPressureLabel">
      <property name="geometry">
       <rect>
-       <x>380</x>
-       <y>360</y>
+       <x>210</x>
+       <y>250</y>
        <width>161</width>
        <height>16</height>
       </rect>
@@ -304,9 +236,9 @@ z-index: 2;</string>
     <widget class="QSlider" name="horizontalSlider">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>148</y>
-       <width>481</width>
+       <x>40</x>
+       <y>350</y>
+       <width>511</width>
        <height>16</height>
       </rect>
      </property>
@@ -323,9 +255,9 @@ z-index: 2;</string>
     <widget class="QLabel" name="statusLabel">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>70</y>
-       <width>141</width>
+       <x>400</x>
+       <y>60</y>
+       <width>91</width>
        <height>21</height>
       </rect>
      </property>
@@ -339,8 +271,8 @@ z-index: 2;</string>
     <widget class="QDoubleSpinBox" name="balancePressureDouble">
      <property name="geometry">
       <rect>
-       <x>200</x>
-       <y>380</y>
+       <x>210</x>
+       <y>200</y>
        <width>129</width>
        <height>22</height>
       </rect>
@@ -374,8 +306,8 @@ z-index: 2;</string>
     <widget class="QLabel" name="DesiredPressureLabel">
      <property name="geometry">
       <rect>
-       <x>200</x>
-       <y>360</y>
+       <x>210</x>
+       <y>180</y>
        <width>141</width>
        <height>16</height>
       </rect>
@@ -387,27 +319,11 @@ z-index: 2;</string>
       <string>Desired  Pressure (psi):</string>
      </property>
     </widget>
-    <widget class="QLabel" name="ArduinoStatusHeading">
-     <property name="geometry">
-      <rect>
-       <x>370</x>
-       <y>50</y>
-       <width>141</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
-     </property>
-     <property name="text">
-      <string>Arduino Port Status:</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="ActuatorPositionHeading">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>120</y>
+       <x>40</x>
+       <y>322</y>
        <width>261</width>
        <height>16</height>
       </rect>
@@ -422,9 +338,9 @@ z-index: 2;</string>
     <widget class="QLabel" name="statusHeader">
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>50</y>
-       <width>141</width>
+       <x>400</x>
+       <y>40</y>
+       <width>101</width>
        <height>16</height>
       </rect>
      </property>
@@ -435,30 +351,14 @@ z-index: 2;</string>
       <string>System status:</string>
      </property>
     </widget>
-    <widget class="QLabel" name="ArduinoStatusLabel">
-     <property name="geometry">
-      <rect>
-       <x>370</x>
-       <y>70</y>
-       <width>141</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
     <widget class="QPushButton" name="measureButton">
      <property name="enabled">
       <bool>false</bool>
      </property>
      <property name="geometry">
       <rect>
-       <x>380</x>
-       <y>280</y>
+       <x>30</x>
+       <y>250</y>
        <width>151</width>
        <height>51</height>
       </rect>
@@ -470,14 +370,50 @@ z-index: 2;</string>
       <string>3. Measure</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="startButton">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>40</y>
+       <width>151</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 16pt &quot;MS Sans Serif&quot;;</string>
+     </property>
+     <property name="text">
+      <string>START </string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="stopButton">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>210</x>
+       <y>40</y>
+       <width>151</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 16pt &quot;MS Sans Serif&quot;;
+color: red;</string>
+     </property>
+     <property name="text">
+      <string>STOP</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="pressureBox_2">
     <property name="geometry">
      <rect>
-      <x>680</x>
+      <x>840</x>
       <y>440</y>
-      <width>561</width>
-      <height>281</height>
+      <width>581</width>
+      <height>311</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -490,7 +426,7 @@ z-index: 2;</string>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>40</y>
+       <y>38</y>
        <width>171</width>
        <height>51</height>
       </rect>
@@ -506,7 +442,7 @@ z-index: 2;</string>
      <property name="geometry">
       <rect>
        <x>230</x>
-       <y>124</y>
+       <y>102</y>
        <width>121</width>
        <height>16</height>
       </rect>
@@ -522,8 +458,8 @@ z-index: 2;</string>
      <property name="geometry">
       <rect>
        <x>230</x>
-       <y>152</y>
-       <width>301</width>
+       <y>130</y>
+       <width>321</width>
        <height>16</height>
       </rect>
      </property>
@@ -541,8 +477,8 @@ z-index: 2;</string>
      <property name="geometry">
       <rect>
        <x>230</x>
-       <y>220</y>
-       <width>301</width>
+       <y>198</y>
+       <width>321</width>
        <height>16</height>
       </rect>
      </property>
@@ -563,7 +499,7 @@ z-index: 2;</string>
      <property name="geometry">
       <rect>
        <x>230</x>
-       <y>192</y>
+       <y>170</y>
        <width>101</width>
        <height>16</height>
       </rect>
@@ -579,7 +515,7 @@ z-index: 2;</string>
      <property name="geometry">
       <rect>
        <x>330</x>
-       <y>190</y>
+       <y>168</y>
        <width>141</width>
        <height>20</height>
       </rect>
@@ -595,7 +531,7 @@ z-index: 2;</string>
      <property name="geometry">
       <rect>
        <x>230</x>
-       <y>230</y>
+       <y>208</y>
        <width>81</width>
        <height>21</height>
       </rect>
@@ -610,8 +546,8 @@ z-index: 2;</string>
     <widget class="QLabel" name="FrameRateHigh">
      <property name="geometry">
       <rect>
-       <x>450</x>
-       <y>230</y>
+       <x>480</x>
+       <y>208</y>
        <width>81</width>
        <height>21</height>
       </rect>
@@ -627,7 +563,7 @@ z-index: 2;</string>
      <property name="geometry">
       <rect>
        <x>230</x>
-       <y>162</y>
+       <y>140</y>
        <width>81</width>
        <height>21</height>
       </rect>
@@ -642,8 +578,8 @@ z-index: 2;</string>
     <widget class="QLabel" name="ExposureTimeHigh">
      <property name="geometry">
       <rect>
-       <x>450</x>
-       <y>162</y>
+       <x>480</x>
+       <y>140</y>
        <width>81</width>
        <height>21</height>
       </rect>
@@ -659,7 +595,7 @@ z-index: 2;</string>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>100</y>
+       <y>110</y>
        <width>171</width>
        <height>51</height>
       </rect>
@@ -674,8 +610,8 @@ z-index: 2;</string>
     <widget class="QPushButton" name="AutoExposureButton">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>160</y>
+       <x>380</x>
+       <y>250</y>
        <width>171</width>
        <height>51</height>
       </rect>
@@ -687,28 +623,12 @@ z-index: 2;</string>
       <string>AutoExposure ON</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="OptimizeParamsButton">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>220</y>
-       <width>171</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
-     </property>
-     <property name="text">
-      <string>Optimize Params</string>
-     </property>
-    </widget>
     <widget class="QSlider" name="PixelClockSlider">
      <property name="geometry">
       <rect>
        <x>230</x>
-       <y>80</y>
-       <width>301</width>
+       <y>58</y>
+       <width>321</width>
        <height>16</height>
       </rect>
      </property>
@@ -732,7 +652,7 @@ z-index: 2;</string>
      <property name="geometry">
       <rect>
        <x>230</x>
-       <y>52</y>
+       <y>30</y>
        <width>101</width>
        <height>16</height>
       </rect>
@@ -747,8 +667,8 @@ z-index: 2;</string>
     <widget class="QLabel" name="PixelClockHigh">
      <property name="geometry">
       <rect>
-       <x>510</x>
-       <y>90</y>
+       <x>530</x>
+       <y>68</y>
        <width>31</width>
        <height>21</height>
       </rect>
@@ -764,7 +684,7 @@ z-index: 2;</string>
      <property name="geometry">
       <rect>
        <x>230</x>
-       <y>90</y>
+       <y>68</y>
        <width>31</width>
        <height>21</height>
       </rect>
@@ -780,7 +700,7 @@ z-index: 2;</string>
      <property name="geometry">
       <rect>
        <x>330</x>
-       <y>52</y>
+       <y>30</y>
        <width>101</width>
        <height>16</height>
       </rect>
@@ -796,7 +716,7 @@ z-index: 2;</string>
      <property name="geometry">
       <rect>
        <x>350</x>
-       <y>122</y>
+       <y>100</y>
        <width>101</width>
        <height>16</height>
       </rect>
@@ -808,102 +728,70 @@ z-index: 2;</string>
       <string/>
      </property>
     </widget>
-   </widget>
-   <widget class="QPushButton" name="ZoomToSelectionButton">
-    <property name="geometry">
-     <rect>
-      <x>470</x>
-      <y>550</y>
-      <width>171</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
-    </property>
-    <property name="text">
-     <string>Zoom to Selection</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="ClearSelectionButton">
-    <property name="geometry">
-     <rect>
-      <x>470</x>
-      <y>610</y>
-      <width>171</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
-    </property>
-    <property name="text">
-     <string>Full Resolution</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="TotalFramesIndicator">
-    <property name="geometry">
-     <rect>
-      <x>230</x>
-      <y>690</y>
-      <width>141</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="TotalFramesHeading">
-    <property name="geometry">
-     <rect>
-      <x>130</x>
-      <y>690</y>
-      <width>91</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
-    </property>
-    <property name="text">
-     <string>Total Frames:</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="FramesDroppedIndicator">
-    <property name="geometry">
-     <rect>
-      <x>520</x>
-      <y>690</y>
-      <width>141</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-   </widget>
-   <widget class="QLabel" name="FramesDroppedHeading">
-    <property name="geometry">
-     <rect>
-      <x>410</x>
-      <y>690</y>
-      <width>111</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
-    </property>
-    <property name="text">
-     <string>Frames Dropped:</string>
-    </property>
+    <widget class="QPushButton" name="ZoomToSelectionButton">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>180</y>
+       <width>171</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
+     </property>
+     <property name="text">
+      <string>Zoom to Selection</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="ClearSelectionButton">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>250</y>
+       <width>171</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
+     </property>
+     <property name="text">
+      <string>Full Resolution</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="ResolutionIndicator">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>270</y>
+       <width>121</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QLabel" name="ResolutionHeading">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>240</y>
+       <width>81</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
+     </property>
+     <property name="text">
+      <string>Resolution:</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -911,7 +799,7 @@ z-index: 2;</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1245</width>
+     <width>1432</width>
      <height>21</height>
     </rect>
    </property>
