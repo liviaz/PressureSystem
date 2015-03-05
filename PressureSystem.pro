@@ -44,18 +44,16 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     motorcontroller.cpp \
     arduinocontroller.cpp \
-    cameracontroller.cpp \
-    roirect.cpp
+    roirect.cpp \
+    cameracontroller.cpp
 
 HEADERS  += mainwindow.h \
     motorcontroller.h \
     FirgelliMotor/mpusbapi.h \
     arduinocontroller.h \
-    cameracontroller.h \
-    roirect.h
+    roirect.h \
+    cameracontroller.h
 
 
 FORMS    += mainwindow.ui
 
-SUBDIRS += \
-    QTFFmpegWrapper/config.pro

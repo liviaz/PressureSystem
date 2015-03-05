@@ -12,10 +12,10 @@
 #include <QPixmap>
 #include <QDateTime>
 
+#include "cameracontroller.h"
 #include "motorcontroller.h"
 #include "ui_mainwindow.h"
 #include "arduinocontroller.h"
-#include "cameracontroller.h"
 #include "uc480_tools.h"
 #include "roirect.h"
 #include "opencv2/highgui/highgui.hpp"
@@ -65,9 +65,12 @@ class MainWindow : public QMainWindow
         cv::VideoWriter *videoWriter;
         int recordingVideo;
         QTimer *videoTimer;
+        QTimer *cropTimer;
         int valveOpened;
+        QString fileName;
 
         qint64 baseTime;
+        qint64 frameMsec;
         double exposureTimeMin;
         double exposureTimeMax;
         double exposureTimeCurr;
@@ -95,7 +98,6 @@ class MainWindow : public QMainWindow
         void changeCameraROI(QRectF boundingROI);
         void initCamera();
         void closeCamera();
-//        void startRecording();
 
 
     public slots:
@@ -114,7 +116,7 @@ class MainWindow : public QMainWindow
         void cameraFrameReceived(QImage *imgFromCamera);
         void updateCameraParamsInGui(double *paramList);
         void videoStarted();
-        void videoStopped();
+        void startRecording();
         void stopRecording();
 
     private slots:
@@ -128,9 +130,7 @@ class MainWindow : public QMainWindow
         void on_measureButton_clicked();
         void on_balancePressureDouble_valueChanged(double arg1);
         void on_measurePressureDouble_valueChanged(double arg1);
-        void on_StartVideoButton_clicked();
         void cameraReadySlot();
-        void on_InitCameraButton_clicked();
         void on_ExposureTimeSlider_sliderReleased();
         void on_FrameRateSlider_sliderReleased();
         void on_PixelClockSlider_sliderReleased();

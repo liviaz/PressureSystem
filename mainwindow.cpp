@@ -55,10 +55,13 @@ MainWindow::MainWindow(QWidget *parent) :
     videoWriter = NULL;
     recordingVideo = 0;
     valveOpened = 0;
+    frameMsec = 50;
 
     // video length timer
     videoTimer = new QTimer(this);
     connect(videoTimer, SIGNAL(timeout()), this, SLOT(stopRecording()));
+    cropTimer = new QTimer(this);
+    connect(cropTimer, SIGNAL(timeout()), this, SLOT(startRecording()));
     currWidth = 0;
     currHeight = 0;
 
@@ -83,8 +86,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->actualPressure->setText("+0.000 psi");
     ui->balanceButton->setEnabled(false);
     ui->measureButton->setEnabled(false);
-    ui->StartVideoButton->setEnabled(false);
-    ui->StartVideoButton->setText("Start Video");
     ui->horizontalSlider->setValue((int) motorPosition);
     ui->cameraImageDisplay->setScene(scene);
     ui->FrameRateSlider->setValue(10);
@@ -129,7 +130,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(startCameraDisplay()), cc, SLOT(startVideo()));
     connect(this, SIGNAL(stopCameraDisplay()), cc, SLOT(stopVideo()));
     connect(cc, SIGNAL(videoStarted()), this, SLOT(videoStarted()));
-    connect(cc, SIGNAL(videoStopped()), this, SLOT(videoStopped()));
     connect(cc, SIGNAL(updateImage(QImage*)), this, SLOT(cameraFrameReceived(QImage*))); // update GUI when new frame available
     connect(this, SIGNAL(setCameraParams(int,int)), cc, SLOT(setCameraParams(int,int)));
     connect(cc, SIGNAL(updateFrameRate(double)), this, SLOT(updateFrameRate(double)));
@@ -176,7 +176,17 @@ MainWindow::~MainWindow()
     }
 
     if (cameraOpen){
+        videoOpen = 0;
+        scene->clear();
+        imageRoi = NULL;
+        currPixmapItem = NULL;
+        rectAdded = false;
+        pixmapSet = false;
+
         emit stopCameraDisplay();
+        ui->ZoomToSelectionButton->setEnabled(false);
+        ui->ClearSelectionButton->setEnabled(false);
+        ui->AutoExposureButton->setEnabled(false);
     }
 
     emit closeCamera();
@@ -220,6 +230,23 @@ void MainWindow::on_stopButton_clicked()
         mc->closePort();
     }
 
+    if (cameraOpen){
+
+        videoOpen = 0;
+        scene->clear();
+        imageRoi = NULL;
+        currPixmapItem = NULL;
+        rectAdded = false;
+        pixmapSet = false;
+
+        emit stopCameraDisplay();
+        ui->ZoomToSelectionButton->setEnabled(false);
+        ui->ClearSelectionButton->setEnabled(false);
+        ui->AutoExposureButton->setEnabled(false);
+
+        emit closeCamera();
+    }
+
     ui->statusLabel->setText("Stopped");
 }
 
@@ -229,7 +256,7 @@ void MainWindow::on_stopButton_clicked()
 void MainWindow::on_startButton_clicked()
 {
     // if arduino is startable, start it
-    if (arduinoStartable && motorStartable){
+    if (arduinoStartable && motorStartable && videoStartable){
         if (!portOpen){
             ac->openPort();
         }
@@ -238,8 +265,12 @@ void MainWindow::on_startButton_clicked()
             mc->openPort();
         }
 
+        emit initCamera();
+        cameraClosable = 0;
+
         ui->statusLabel->setText("Started");
     }
+
 }
 
 
@@ -455,11 +486,11 @@ void MainWindow::on_balanceButton_clicked()
     ui->measureButton->setEnabled(false);
     ui->statusLabel->setText("Balancing ... please wait");
     QThread::msleep(100);
-    //QCoreApplication::processEvents();
 
     // call helper function to achieve desired pressure
     emit goToPressure(balancePressureValue, 0);
 }
+
 
 /*
  * This function signifies that desired pressure has been achieved
@@ -475,7 +506,7 @@ void MainWindow::balanceFinished(int successful, int flag){
 
         if (!successful){
             ui->statusLabel->setText("Balance failed");
-            QThread::sleep(2);
+            QThread::sleep(1);
         }
 
         ui->horizontalSlider->setValue((int) motorPosition);
@@ -487,38 +518,45 @@ void MainWindow::balanceFinished(int successful, int flag){
 
      // if flag is 1, next step is to start recording video
      // and open valve
-    } else if (flag == 1){
+    } else if (flag == 1){        
 
-        // 2. start recording video
-        // first get file path
-        QString fileName = QFileDialog::getSaveFileName(this,
-             tr("Open Image"), "C:\Users\Admin\Desktop");
-        fileName.append(".avi");
+        // 2. Crop ROI
+        QRectF boundingROI = imageRoi->boundingRect();
+        saveX = imageRoi->xTopLeft;
+        saveY = imageRoi->yTopLeft;
+        saveW = imageRoi->width;
+        saveH = imageRoi->height;
 
-        //QString fileName = "C:\Users\Admin\Desktop\test.avi";
+        // stop video
+        videoOpen = 0;
+        scene->clear();
+        imageRoi = NULL;
+        currPixmapItem = NULL;
+        rectAdded = true;
+        pixmapSet = false;
+        emit stopCameraDisplay();
 
-        cv::Size frameSize(currWidth, currHeight);
-        videoWriter = new VideoWriter(fileName.toStdString(), CV_FOURCC('D', 'I', 'B', ' '),
-                                      frameRateCurr, frameSize, true);
+        // resize ROI
+        emit changeCameraROI(boundingROI);
 
+        // restart video with no bounding rect
+        scene->clear();
+        emit startCameraDisplay();
+        videoOpen = 1;
 
+        QString currResolution;
+        currResolution.sprintf("%d x %d", saveW, saveH);
+        ui->ResolutionIndicator->setText(currResolution);
 
-        qDebug() << "video timer initialized";
+        // now wait a bit for frames to start coming in
+        cropTimer->start(1000);
 
-        // start grabbing frames for the next 3 seconds
-        if (videoWriter->isOpened()){
-            recordingVideo = 1;
-            valveOpened = 0;
-            videoTimer->start(3000);
-            qDebug() << "video timer started";
-        }
 
      // measurement is done: close valve and re-enable GUI
     } else if (flag == 2){
 
         // 7. close valve
         emit setValve(0);
-        QThread::msleep(100);
 
         ui->balanceButton->setChecked(true);
         ui->balanceButton->setEnabled(true);
@@ -529,18 +567,61 @@ void MainWindow::balanceFinished(int successful, int flag){
     }
 }
 
+
+// start recording video
+void MainWindow::startRecording()
+{
+
+    cropTimer->stop();
+
+    // init video
+    fileName = QFileDialog::getSaveFileName(this,
+         tr("Open Image"), "C:\Users\Admin\Desktop");
+    fileName.append(".avi");
+
+    // 4. start grabbing frames for the next 3 seconds
+    recordingVideo = 1;
+    valveOpened = 0;
+    videoTimer->start(3000);
+
+}
+
+
+// stop recording video and release embryo
 void MainWindow::stopRecording()
 {
 
-    // 4. stop video and move pressure back
+    // 6. stop video
     recordingVideo = 0;
     valveOpened = 0;
     videoTimer->stop();
     videoWriter->release();
     videoWriter = NULL;
-    qDebug() << "video timer stopped";
 
-    // 5. go back to initial pressure - 0.02 to release embryo
+    // 7. Un-crop ROI
+    QRectF boundingROI = QRectF(0, 0, 1280, 1024);
+
+    // stop video
+    videoOpen = 0;
+    scene->clear();
+    imageRoi = NULL;
+    currPixmapItem = NULL;
+    rectAdded = false;
+    pixmapSet = false;
+    emit stopCameraDisplay();
+
+    // resize ROI
+    emit changeCameraROI(boundingROI);
+
+    // restart video
+    //imageRoi = new RoiRect(saveX, saveY, saveW, saveH);
+    scene->clear();
+    emit startCameraDisplay();
+    videoOpen = 1;
+
+    ui->ResolutionIndicator->setText("1280 x 1024");
+
+    // 8. go back to initial pressure - 0.02 to release embryo
     emit goToPressure(balancePressureValue - 0.02, 2);
 }
 
@@ -580,7 +661,7 @@ void MainWindow::cameraFrameReceived(QImage* imgFromCamera){
         if (pixmapSet == false){
             pixmapSet = true;
             currPixmapItem = scene->addPixmap(QPixmap::fromImage(*cameraImagePtr));
-        } else {
+        } else if (frameMsec < 500 && frameMsec > 5){
             currPixmapItem->setPixmap(QPixmap::fromImage(*cameraImagePtr));
         }
 
@@ -598,7 +679,14 @@ void MainWindow::cameraFrameReceived(QImage* imgFromCamera){
         if (recordingVideo){
 
             // write frame to video
-            if (videoWriter != NULL){
+            if (videoWriter == NULL) {
+
+                cv::Size frameSize(currWidth, currHeight);
+                videoWriter = new VideoWriter(fileName.toStdString(), CV_FOURCC('D', 'I', 'B', ' '),
+                                              frameRateCurr, frameSize, true);
+
+
+            } else if (videoWriter->isOpened()) {
 
                 Mat tempMat = Mat(currHeight, currWidth, CV_8UC4,
                                       const_cast<uchar*>(cameraImagePtr->bits()),
@@ -608,7 +696,7 @@ void MainWindow::cameraFrameReceived(QImage* imgFromCamera){
                 qDebug() << "wrote frame to videowriter";
             }
 
-            // 3. if valve not open yet, open it and wait 3 seconds
+            // 5. if valve not open yet, open it and wait 3 seconds
             if (valveOpened == 0){
                 valveOpened = 1;
                 emit setValve(1);
@@ -623,7 +711,7 @@ void MainWindow::cameraFrameReceived(QImage* imgFromCamera){
                                           Qt::KeepAspectRatio);
 
         qint64 currTime = QDateTime::currentMSecsSinceEpoch();
-        qint64 frameMsec = currTime - baseTime;
+        frameMsec = currTime - baseTime;
         qDebug() << "frame msecs: " << frameMsec;
         baseTime = currTime;
 
@@ -633,11 +721,26 @@ void MainWindow::cameraFrameReceived(QImage* imgFromCamera){
 
 
 // signifies that camera is done initializing
+// automatically start the video
 void MainWindow::cameraFinishedInit(){
     cameraOpen = 1;
     cameraClosable = 0;
-    ui->StartVideoButton->setEnabled(true);
-    ui->InitCameraButton->setEnabled(false);
+
+    // either start or stop video depending on state at time of click
+    if (videoStartable && cameraOpen && !videoOpen){
+
+        imageRoi = new RoiRect(50, 50, 1180, 924);
+        scene->clear();
+
+        emit startCameraDisplay();
+        videoOpen = 1;
+        ui->ResolutionIndicator->setText("1280 x 1024");
+        ui->ZoomToSelectionButton->setEnabled(true);
+        ui->ClearSelectionButton->setEnabled(true);
+        ui->AutoExposureButton->setEnabled(true);
+
+
+    }
 }
 
 
@@ -654,67 +757,12 @@ void MainWindow::cameraReadySlot(){
 }
 
 
-// start video
-void MainWindow::on_StartVideoButton_clicked()
-{
-    // either start or stop video depending on state at time of click
-    if (videoStartable && cameraOpen && !videoOpen){
-
-        imageRoi = new RoiRect(50, 50, 1180, 924);
-        scene->clear();
-
-        emit startCameraDisplay();
-        videoOpen = 1;
-        ui->ResolutionIndicator->setText("1280 x 1024");
-        ui->StartVideoButton->setText("Stop Video");
-        ui->ZoomToSelectionButton->setEnabled(true);
-        ui->ClearSelectionButton->setEnabled(true);
-        ui->AutoExposureButton->setEnabled(true);
-
-
-    } else {
-
-        videoOpen = 0;
-        scene->clear();
-        imageRoi = NULL;
-        currPixmapItem = NULL;
-        rectAdded = false;
-        pixmapSet = false;
-
-        emit stopCameraDisplay();
-        ui->StartVideoButton->setText("Start Video");
-        ui->ZoomToSelectionButton->setEnabled(false);
-        ui->ClearSelectionButton->setEnabled(false);
-        ui->AutoExposureButton->setEnabled(false );
-
-    }
-}
-
 
 void MainWindow::videoStarted()
 {
-
     videoOpen = 1;
     if (!ROIselected){
         scene->addItem(imageRoi);
-    }
-}
-
-
-
-void MainWindow::videoStopped()
-{
-
-}
-
-
-// if camera thread is running, initialize camera
-void MainWindow::on_InitCameraButton_clicked()
-{
-
-    if (videoStartable){
-        emit initCamera();
-        cameraClosable = 0;
     }
 }
 
@@ -731,6 +779,7 @@ void MainWindow::on_ExposureTimeSlider_sliderReleased()
 
 
 
+
 /* change frame rate when slider released
  * frameRateIncrement maps to 1 on the slider increment
  *
@@ -744,6 +793,8 @@ void MainWindow::on_FrameRateSlider_sliderReleased()
 
 
 
+
+
 // change pixel clock
 void MainWindow::on_PixelClockSlider_sliderReleased()
 {
@@ -752,6 +803,7 @@ void MainWindow::on_PixelClockSlider_sliderReleased()
     ui->PixelClockIndicator->setText(pixelClockActual);
     emit setCameraParams(CHANGE_PIXEL_CLOCK, ui->PixelClockSlider->value());
 }
+
 
 
 
@@ -842,6 +894,7 @@ void MainWindow::updateCameraParamsInGui(double *paramList){
 
 
 
+
 // updateFrameRate in GUI only
 void MainWindow::updateFrameRate(double frameRate){
 
@@ -853,6 +906,7 @@ void MainWindow::updateFrameRate(double frameRate){
     ui->FrameRateSlider->setValue((int) ((frameRateCurr - frameRateMinimum) /
                                          frameRateIncrement));
 }
+
 
 
 

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1432</width>
-    <height>808</height>
+    <height>792</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,7 +20,7 @@
       <x>20</x>
       <y>10</y>
       <width>801</width>
-      <height>681</height>
+      <height>621</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -39,7 +39,7 @@
       <x>840</x>
       <y>10</y>
       <width>581</width>
-      <height>401</height>
+      <height>321</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -55,8 +55,8 @@
      </property>
      <property name="geometry">
       <rect>
-       <x>400</x>
-       <y>180</y>
+       <x>390</x>
+       <y>110</y>
        <width>151</width>
        <height>51</height>
       </rect>
@@ -74,8 +74,8 @@
     <widget class="QDoubleSpinBox" name="measurePressureDouble">
      <property name="geometry">
       <rect>
-       <x>210</x>
-       <y>270</y>
+       <x>200</x>
+       <y>200</y>
        <width>129</width>
        <height>22</height>
       </rect>
@@ -111,8 +111,8 @@
      </property>
      <property name="geometry">
       <rect>
-       <x>400</x>
-       <y>110</y>
+       <x>390</x>
+       <y>40</y>
        <width>151</width>
        <height>51</height>
       </rect>
@@ -127,8 +127,8 @@
     <widget class="QLabel" name="actualPressure">
      <property name="geometry">
       <rect>
-       <x>210</x>
-       <y>130</y>
+       <x>200</x>
+       <y>60</y>
        <width>131</width>
        <height>21</height>
       </rect>
@@ -146,8 +146,8 @@
      </property>
      <property name="geometry">
       <rect>
-       <x>400</x>
-       <y>250</y>
+       <x>390</x>
+       <y>180</y>
        <width>151</width>
        <height>51</height>
       </rect>
@@ -169,8 +169,8 @@ z-index: 2;</string>
      </property>
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>180</y>
+       <x>20</x>
+       <y>110</y>
        <width>151</width>
        <height>51</height>
       </rect>
@@ -185,8 +185,8 @@ z-index: 2;</string>
     <widget class="QLabel" name="PressureLabel">
      <property name="geometry">
       <rect>
-       <x>210</x>
-       <y>110</y>
+       <x>200</x>
+       <y>40</y>
        <width>131</width>
        <height>16</height>
       </rect>
@@ -204,8 +204,8 @@ z-index: 2;</string>
      </property>
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>110</y>
+       <x>20</x>
+       <y>40</y>
        <width>151</width>
        <height>51</height>
       </rect>
@@ -220,8 +220,8 @@ z-index: 2;</string>
     <widget class="QLabel" name="MeasurementPressureLabel">
      <property name="geometry">
       <rect>
-       <x>210</x>
-       <y>250</y>
+       <x>200</x>
+       <y>180</y>
        <width>161</width>
        <height>16</height>
       </rect>
@@ -236,8 +236,8 @@ z-index: 2;</string>
     <widget class="QSlider" name="horizontalSlider">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>350</y>
+       <x>30</x>
+       <y>280</y>
        <width>511</width>
        <height>16</height>
       </rect>
@@ -252,27 +252,11 @@ z-index: 2;</string>
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
-    <widget class="QLabel" name="statusLabel">
-     <property name="geometry">
-      <rect>
-       <x>400</x>
-       <y>60</y>
-       <width>91</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
-     </property>
-     <property name="text">
-      <string>Stopped</string>
-     </property>
-    </widget>
     <widget class="QDoubleSpinBox" name="balancePressureDouble">
      <property name="geometry">
       <rect>
-       <x>210</x>
-       <y>200</y>
+       <x>200</x>
+       <y>130</y>
        <width>129</width>
        <height>22</height>
       </rect>
@@ -306,8 +290,8 @@ z-index: 2;</string>
     <widget class="QLabel" name="DesiredPressureLabel">
      <property name="geometry">
       <rect>
-       <x>210</x>
-       <y>180</y>
+       <x>200</x>
+       <y>110</y>
        <width>141</width>
        <height>16</height>
       </rect>
@@ -322,8 +306,8 @@ z-index: 2;</string>
     <widget class="QLabel" name="ActuatorPositionHeading">
      <property name="geometry">
       <rect>
-       <x>40</x>
-       <y>322</y>
+       <x>30</x>
+       <y>252</y>
        <width>261</width>
        <height>16</height>
       </rect>
@@ -335,30 +319,14 @@ z-index: 2;</string>
       <string>Set Actuator Position</string>
      </property>
     </widget>
-    <widget class="QLabel" name="statusHeader">
-     <property name="geometry">
-      <rect>
-       <x>400</x>
-       <y>40</y>
-       <width>101</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
-     </property>
-     <property name="text">
-      <string>System status:</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="measureButton">
      <property name="enabled">
       <bool>false</bool>
      </property>
      <property name="geometry">
       <rect>
-       <x>30</x>
-       <y>250</y>
+       <x>20</x>
+       <y>180</y>
        <width>151</width>
        <height>51</height>
       </rect>
@@ -370,50 +338,14 @@ z-index: 2;</string>
       <string>3. Measure</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="startButton">
-     <property name="geometry">
-      <rect>
-       <x>30</x>
-       <y>40</y>
-       <width>151</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font: 16pt &quot;MS Sans Serif&quot;;</string>
-     </property>
-     <property name="text">
-      <string>START </string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="stopButton">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>210</x>
-       <y>40</y>
-       <width>151</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font: 16pt &quot;MS Sans Serif&quot;;
-color: red;</string>
-     </property>
-     <property name="text">
-      <string>STOP</string>
-     </property>
-    </widget>
    </widget>
    <widget class="QGroupBox" name="pressureBox_2">
     <property name="geometry">
      <rect>
       <x>840</x>
-      <y>440</y>
+      <y>350</y>
       <width>581</width>
-      <height>311</height>
+      <height>281</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -422,22 +354,6 @@ color: red;</string>
     <property name="title">
      <string>Camera Stuff</string>
     </property>
-    <widget class="QPushButton" name="InitCameraButton">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>38</y>
-       <width>171</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
-     </property>
-     <property name="text">
-      <string>1. Init Camera</string>
-     </property>
-    </widget>
     <widget class="QLabel" name="ExposureTimeHeading">
      <property name="geometry">
       <rect>
@@ -591,27 +507,11 @@ color: red;</string>
       <string/>
      </property>
     </widget>
-    <widget class="QPushButton" name="StartVideoButton">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>110</y>
-       <width>171</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
-     </property>
-     <property name="text">
-      <string>2. Start Video</string>
-     </property>
-    </widget>
     <widget class="QPushButton" name="AutoExposureButton">
      <property name="geometry">
       <rect>
-       <x>380</x>
-       <y>250</y>
+       <x>20</x>
+       <y>200</y>
        <width>171</width>
        <height>51</height>
       </rect>
@@ -732,7 +632,7 @@ color: red;</string>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>180</y>
+       <y>60</y>
        <width>171</width>
        <height>51</height>
       </rect>
@@ -748,7 +648,7 @@ color: red;</string>
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>250</y>
+       <y>130</y>
        <width>171</width>
        <height>51</height>
       </rect>
@@ -763,8 +663,8 @@ color: red;</string>
     <widget class="QLabel" name="ResolutionIndicator">
      <property name="geometry">
       <rect>
-       <x>230</x>
-       <y>270</y>
+       <x>310</x>
+       <y>240</y>
        <width>121</width>
        <height>21</height>
       </rect>
@@ -792,6 +692,74 @@ color: red;</string>
       <string>Resolution:</string>
      </property>
     </widget>
+   </widget>
+   <widget class="QPushButton" name="startButton">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>650</y>
+      <width>151</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 16pt &quot;MS Sans Serif&quot;;</string>
+    </property>
+    <property name="text">
+     <string>START </string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="stopButton">
+    <property name="enabled">
+     <bool>true</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>200</x>
+      <y>650</y>
+      <width>151</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 16pt &quot;MS Sans Serif&quot;;
+color: red;</string>
+    </property>
+    <property name="text">
+     <string>STOP</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="statusLabel">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>680</y>
+      <width>91</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
+    </property>
+    <property name="text">
+     <string>Stopped</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="statusHeader">
+    <property name="geometry">
+     <rect>
+      <x>400</x>
+      <y>660</y>
+      <width>101</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
+    </property>
+    <property name="text">
+     <string>System status:</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
