@@ -96,8 +96,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->PixelClockSlider->setValue(40);
     ui->ZoomToSelectionButton->setEnabled(false);
     ui->ClearSelectionButton->setEnabled(false);
-    ui->AutoExposureButton->setEnabled(false);
-
 
     // start motorController, arduinoController, and cameraController
     mc = new MotorController();
@@ -132,7 +130,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this, SIGNAL(startCameraDisplay()), cc, SLOT(startVideo()));
     connect(this, SIGNAL(stopCameraDisplay()), cc, SLOT(stopVideo()));
     connect(cc, SIGNAL(videoStarted()), this, SLOT(videoStarted()));
-    connect(cc, SIGNAL(updateImage(QImage*)), this, SLOT(cameraFrameReceived(QImage*))); // update GUI when new frame available
+    connect(cc, SIGNAL(updateImage(char *, int, int)), this, SLOT(cameraFrameReceived(char *, int, int))); // update GUI when new frame available
     connect(this, SIGNAL(setCameraParams(int,int)), cc, SLOT(setCameraParams(int,int)));
     connect(cc, SIGNAL(updateFrameRate(double)), this, SLOT(updateFrameRate(double)));
     connect(this, SIGNAL(changeCameraROI(QRectF)), cc, SLOT(changeCameraROI(QRectF)));
@@ -188,7 +186,6 @@ MainWindow::~MainWindow()
         emit stopCameraDisplay();
         ui->ZoomToSelectionButton->setEnabled(false);
         ui->ClearSelectionButton->setEnabled(false);
-        ui->AutoExposureButton->setEnabled(false);
     }
 
     emit closeCamera();
@@ -244,7 +241,6 @@ void MainWindow::on_stopButton_clicked()
         emit stopCameraDisplay();
         ui->ZoomToSelectionButton->setEnabled(false);
         ui->ClearSelectionButton->setEnabled(false);
-        ui->AutoExposureButton->setEnabled(false);
 
         emit closeCamera();
     }
@@ -662,9 +658,12 @@ void MainWindow::on_measureButton_clicked()
 
 
 // update cameraImagePtr when a new frame is received from the camera
-void MainWindow::cameraFrameReceived(QImage* imgFromCamera){
+void MainWindow::cameraFrameReceived(char* imgFromCamera, int width, int height){
 
-    cameraImagePtr = imgFromCamera;
+    cameraImagePtr = new QImage(reinterpret_cast<uchar *>(imgFromCamera),
+                                width, height, QImage::Format_RGB32);
+
+    //cameraImagePtr = imgFromCamera;
 
     if (cameraOpen && videoOpen){
 
@@ -747,8 +746,6 @@ void MainWindow::cameraFinishedInit(){
         ui->ResolutionIndicator->setText("1280 x 1024");
         ui->ZoomToSelectionButton->setEnabled(true);
         ui->ClearSelectionButton->setEnabled(true);
-        ui->AutoExposureButton->setEnabled(true);
-
 
     }
 }
@@ -768,13 +765,11 @@ void MainWindow::cameraReadySlot(){
 
 
 
-void MainWindow::videoStarted()
-{
+void MainWindow::videoStarted(){
     videoOpen = 1;
-//    if (!ROIselected){
-//        scene->addItem(imageRoi);
-//    }
 }
+
+
 
 
 
@@ -981,14 +976,6 @@ void MainWindow::on_ClearSelectionButton_clicked()
 
     ui->ResolutionIndicator->setText("1280 x 1024");
 }
-
-
-
-
-
-
-
-
 
 
 

@@ -114,7 +114,7 @@ class MainWindow : public QMainWindow
         void cameraFinishedInit();
         void cameraFinishedClose();
         void updateFrameRate(double frameRate);
-        void cameraFrameReceived(QImage *imgFromCamera);
+        void cameraFrameReceived(char *imgFromCamera, int width, int height);
         void updateCameraParamsInGui(double *paramList);
         void videoStarted();
         void startRecording();

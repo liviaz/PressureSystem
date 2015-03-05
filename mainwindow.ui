@@ -507,22 +507,6 @@ z-index: 2;</string>
       <string/>
      </property>
     </widget>
-    <widget class="QPushButton" name="AutoExposureButton">
-     <property name="geometry">
-      <rect>
-       <x>20</x>
-       <y>200</y>
-       <width>171</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
-     </property>
-     <property name="text">
-      <string>AutoExposure ON</string>
-     </property>
-    </widget>
     <widget class="QSlider" name="PixelClockSlider">
      <property name="geometry">
       <rect>

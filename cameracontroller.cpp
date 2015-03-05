@@ -151,6 +151,11 @@ void CameraController::initializeCameraParams(){
 
     delete initSize;
 
+    // enable auto exposure
+    double param1 = 1;
+    double param2 = 1;
+    nRet = is_SetAutoParameter(*hCam, IS_SET_ENABLE_AUTO_GAIN, &param1, &param2);
+
     // initialize events
     hEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
     notifier = new QWinEventNotifier(hEvent);
@@ -348,20 +353,9 @@ void CameraController::eventSignaled(HANDLE h) {
 
     if (videoOn){
 
-        // if recording, add frame to video
-//        if (recordingVideo){
-//            isavi_AddFrame(*aviID, imageData);
-//        } else {
-
-            // copy data from camera memory to class variable QImage cameraImage
-            if (cameraImage != NULL){
-                delete cameraImage;
-            }
-
-            cameraImage = new QImage(reinterpret_cast<uchar *>(imageData), nX, nY, QImage::Format_RGB32);
-            emit updateImage(cameraImage);
-//        }
-
+        // emit camera image memory pointer to be copied
+        // into QImage in main thread
+        emit updateImage(imageData, nX, nY);
     }
 }
 
@@ -381,7 +375,6 @@ void CameraController::optimizeCameraParams(){
     // Use pixel clock = 40
 
 }
-
 
 
 
@@ -455,6 +448,8 @@ void CameraController::changeCameraROI(QRectF boundingROI)
 
 
 
+
+
 // start recording avi
 void CameraController::startRecording()
 {
@@ -488,6 +483,8 @@ void CameraController::startRecording()
     }
 
 }
+
+
 
 
 // stop recording avi

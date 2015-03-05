@@ -64,7 +64,7 @@ private:
 signals:
     void cameraInitialized();
     void cameraClosed();
-    void updateImage(QImage *cameraImage);
+    void updateImage(char *cameraImage, int width, int height);
     void updateFrameRate(double frameRate);
     void updateCameraParamsInGui(double *paramList);
     void recordingStarted();
