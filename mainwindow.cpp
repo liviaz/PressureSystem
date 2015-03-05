@@ -57,11 +57,13 @@ MainWindow::MainWindow(QWidget *parent) :
     valveOpened = 0;
     frameMsec = 50;
 
-    // video length timer
+    // timers related to measurement
     videoTimer = new QTimer(this);
     connect(videoTimer, SIGNAL(timeout()), this, SLOT(stopRecording()));
     cropTimer = new QTimer(this);
     connect(cropTimer, SIGNAL(timeout()), this, SLOT(startRecording()));
+    uncropTimer = new QTimer(this);
+    connect(uncropTimer, SIGNAL(timeout()), this, SLOT(finishMeasurement()));
     currWidth = 0;
     currHeight = 0;
 
@@ -576,7 +578,7 @@ void MainWindow::startRecording()
 
     // init video
     fileName = QFileDialog::getSaveFileName(this,
-         tr("Open Image"), "C:\Users\Admin\Desktop");
+         tr("Open Image"), "C:/Users/Admin/Desktop");
     fileName.append(".avi");
 
     // 4. start grabbing frames for the next 3 seconds
@@ -597,6 +599,14 @@ void MainWindow::stopRecording()
     videoTimer->stop();
     videoWriter->release();
     videoWriter = NULL;
+    uncropTimer->start(1000);
+
+}
+
+// un-crop ROI after everything is done.
+void MainWindow::finishMeasurement(){
+
+    uncropTimer->stop();
 
     // 7. Un-crop ROI
     QRectF boundingROI = QRectF(0, 0, 1280, 1024);
@@ -614,7 +624,7 @@ void MainWindow::stopRecording()
     emit changeCameraROI(boundingROI);
 
     // restart video
-    //imageRoi = new RoiRect(saveX, saveY, saveW, saveH);
+    imageRoi = new RoiRect(saveX, saveY, saveW, saveH);
     scene->clear();
     emit startCameraDisplay();
     videoOpen = 1;
@@ -761,9 +771,9 @@ void MainWindow::cameraReadySlot(){
 void MainWindow::videoStarted()
 {
     videoOpen = 1;
-    if (!ROIselected){
-        scene->addItem(imageRoi);
-    }
+//    if (!ROIselected){
+//        scene->addItem(imageRoi);
+//    }
 }
 
 

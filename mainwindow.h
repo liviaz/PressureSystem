@@ -66,6 +66,7 @@ class MainWindow : public QMainWindow
         int recordingVideo;
         QTimer *videoTimer;
         QTimer *cropTimer;
+        QTimer *uncropTimer;
         int valveOpened;
         QString fileName;
 
@@ -118,6 +119,7 @@ class MainWindow : public QMainWindow
         void videoStarted();
         void startRecording();
         void stopRecording();
+        void finishMeasurement();
 
     private slots:
         void on_stopButton_clicked();
