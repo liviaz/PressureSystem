@@ -25,6 +25,7 @@
 #define CHANGE_EXPOSURE_TIME 1
 #define CHANGE_FRAME_RATE 2
 #define CHANGE_PIXEL_CLOCK 3
+#define MEAS_FRAME_RATE 75
 
 namespace Ui {
 class MainWindow;
@@ -87,6 +88,8 @@ class MainWindow : public QMainWindow
         int saveH;
         int currWidth;
         int currHeight;
+        int snapNextFrame;
+        bool fileExists(QString path);
 
     signals:
         void setValve(int value);
@@ -138,6 +141,9 @@ class MainWindow : public QMainWindow
         void on_PixelClockSlider_sliderReleased();
         void on_ZoomToSelectionButton_clicked();
         void on_ClearSelectionButton_clicked();
+        void on_SnapImageButton_clicked();
+        void on_fileNameButton_clicked();
+        void on_fileNameBox_editingFinished();
 };
 
 #endif // MAINWINDOW_H

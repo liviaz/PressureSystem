@@ -154,7 +154,7 @@
      </property>
      <property name="styleSheet">
       <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;
-z-index: 2;</string>
+</string>
      </property>
      <property name="text">
       <string>Open Valve</string>
@@ -676,6 +676,22 @@ z-index: 2;</string>
       <string>Resolution:</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="SnapImageButton">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>200</y>
+       <width>171</width>
+       <height>51</height>
+      </rect>
+     </property>
+     <property name="styleSheet">
+      <string notr="true">font: 12pt &quot;MS Sans Serif&quot;;</string>
+     </property>
+     <property name="text">
+      <string>Snap Image</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QPushButton" name="startButton">
     <property name="geometry">
@@ -733,9 +749,9 @@ color: red;</string>
     <property name="geometry">
      <rect>
       <x>400</x>
-      <y>660</y>
+      <y>650</y>
       <width>101</width>
-      <height>16</height>
+      <height>21</height>
      </rect>
     </property>
     <property name="styleSheet">
@@ -743,6 +759,51 @@ color: red;</string>
     </property>
     <property name="text">
      <string>System status:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="FileToSaveHeading">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>650</y>
+      <width>111</width>
+      <height>21</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
+    </property>
+    <property name="text">
+     <string>Filename to save:</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="fileNameBox">
+    <property name="geometry">
+     <rect>
+      <x>650</x>
+      <y>679</y>
+      <width>551</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font: 10pt &quot;MS Sans Serif&quot;;</string>
+    </property>
+    <property name="text">
+     <string>C:/Users/Admin/Desktop/Data/test</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="fileNameButton">
+    <property name="geometry">
+     <rect>
+      <x>1210</x>
+      <y>680</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>...</string>
     </property>
    </widget>
   </widget>

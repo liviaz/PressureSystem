@@ -56,6 +56,8 @@ MainWindow::MainWindow(QWidget *parent) :
     recordingVideo = 0;
     valveOpened = 0;
     frameMsec = 50;
+    snapNextFrame = 0;
+    fileName = "C:/Users/Admin/Desktop/Data/test";
 
     // timers related to measurement
     videoTimer = new QTimer(this);
@@ -241,6 +243,7 @@ void MainWindow::on_stopButton_clicked()
         emit stopCameraDisplay();
         ui->ZoomToSelectionButton->setEnabled(false);
         ui->ClearSelectionButton->setEnabled(false);
+        ui->SnapImageButton->setEnabled(false);
 
         emit closeCamera();
     }
@@ -547,7 +550,7 @@ void MainWindow::balanceFinished(int successful, int flag){
         ui->ResolutionIndicator->setText(currResolution);
 
         // now wait a bit for frames to start coming in
-        cropTimer->start(1000);
+        cropTimer->start(500);
 
 
      // measurement is done: close valve and re-enable GUI
@@ -560,6 +563,9 @@ void MainWindow::balanceFinished(int successful, int flag){
         ui->balanceButton->setEnabled(true);
         ui->initializeButton->setEnabled(true);
         ui->measureButton->setEnabled(true);
+        ui->SnapImageButton->setEnabled(true);
+        ui->ZoomToSelectionButton->setEnabled(true);
+        ui->ClearSelectionButton->setEnabled(false);
         ui->statusLabel->setText(" ... ");
 
     }
@@ -569,13 +575,15 @@ void MainWindow::balanceFinished(int successful, int flag){
 // start recording video
 void MainWindow::startRecording()
 {
-
     cropTimer->stop();
 
-    // init video
-    fileName = QFileDialog::getSaveFileName(this,
-         tr("Open Image"), "C:/Users/Admin/Desktop");
-    fileName.append(".avi");
+    // change frame rate to 75 fps
+    if (MEAS_FRAME_RATE < frameRateMaximum*.95){
+        emit setCameraParams(CHANGE_FRAME_RATE, MEAS_FRAME_RATE);
+        QThread::msleep(500);
+    } else {
+        qDebug() << "error: can't achieve necessary frame rate";
+    }
 
     // 4. start grabbing frames for the next 3 seconds
     recordingVideo = 1;
@@ -598,6 +606,7 @@ void MainWindow::stopRecording()
     uncropTimer->start(1000);
 
 }
+
 
 // un-crop ROI after everything is done.
 void MainWindow::finishMeasurement(){
@@ -642,6 +651,9 @@ void MainWindow::on_measureButton_clicked()
     ui->measureButton->setChecked(true);
     ui->initializeButton->setEnabled(false);
     ui->balanceButton->setEnabled(false);
+    ui->SnapImageButton->setEnabled(false);
+    ui->ZoomToSelectionButton->setEnabled(false);
+    ui->ClearSelectionButton->setEnabled(false);
     ui->statusLabel->setText("Measuring ... please wait");
 
     // 1. achieve desired pressure
@@ -660,13 +672,12 @@ void MainWindow::on_measureButton_clicked()
 // update cameraImagePtr when a new frame is received from the camera
 void MainWindow::cameraFrameReceived(char* imgFromCamera, int width, int height){
 
-    cameraImagePtr = new QImage(reinterpret_cast<uchar *>(imgFromCamera),
-                                width, height, QImage::Format_RGB32);
-
-    //cameraImagePtr = imgFromCamera;
-
     if (cameraOpen && videoOpen){
 
+        cameraImagePtr = new QImage(reinterpret_cast<uchar *>(imgFromCamera),
+                                    width, height, QImage::Format_RGB32);
+
+        // set current pixmap
         if (pixmapSet == false){
             pixmapSet = true;
             currPixmapItem = scene->addPixmap(QPixmap::fromImage(*cameraImagePtr));
@@ -685,13 +696,27 @@ void MainWindow::cameraFrameReceived(char* imgFromCamera, int width, int height)
         currWidth = cameraImagePtr->width();
         currHeight = cameraImagePtr->height();
 
+        // optionally add frame to current video
         if (recordingVideo){
 
             // write frame to video
             if (videoWriter == NULL) {
 
                 cv::Size frameSize(currWidth, currHeight);
-                videoWriter = new VideoWriter(fileName.toStdString(), CV_FOURCC('D', 'I', 'B', ' '),
+
+                QString saveName = fileName;
+                saveName.append(".avi");
+
+                // make sure file doesn't exist already
+                while (fileExists(saveName)){
+                    fileName.append("_1");
+                    ui->fileNameBox->setText(fileName);
+                    saveName = fileName;
+                    saveName.append(".avi");
+                }
+
+                videoWriter = new VideoWriter(saveName.toStdString(),
+                                              CV_FOURCC('D', 'I', 'B', ' '),
                                               frameRateCurr, frameSize, true);
 
 
@@ -712,7 +737,27 @@ void MainWindow::cameraFrameReceived(char* imgFromCamera, int width, int height)
                 qDebug() << "valve set";
             }
 
+        // optionally save snapshot of image
+        } else if (snapNextFrame){
+
+            snapNextFrame = 0;
+            QString saveName = fileName;
+            saveName.append(".jpg");
+
+            // make sure file doesn't exist already
+            while (fileExists(saveName)){
+                fileName.append("_1");
+                ui->fileNameBox->setText(fileName);
+                saveName = fileName;
+                saveName.append(".jpg");
+            }
+
+            QFile file(saveName);
+            file.open(QIODevice::WriteOnly);
+            QPixmap::fromImage(*cameraImagePtr).save(&file, "JPG");
+            file.close();
         }
+
 
         scene->setSceneRect(cameraImagePtr->rect());
         ui->cameraImageDisplay->setScene(scene);
@@ -724,7 +769,11 @@ void MainWindow::cameraFrameReceived(char* imgFromCamera, int width, int height)
         qDebug() << "frame msecs: " << frameMsec;
         baseTime = currTime;
 
+        delete cameraImagePtr;
+        cameraImagePtr = NULL;
     }
+
+
 }
 
 
@@ -899,7 +948,6 @@ void MainWindow::updateCameraParamsInGui(double *paramList){
 
 
 
-
 // updateFrameRate in GUI only
 void MainWindow::updateFrameRate(double frameRate){
 
@@ -911,8 +959,6 @@ void MainWindow::updateFrameRate(double frameRate){
     ui->FrameRateSlider->setValue((int) ((frameRateCurr - frameRateMinimum) /
                                          frameRateIncrement));
 }
-
-
 
 
 // crop ROI
@@ -945,9 +991,10 @@ void MainWindow::on_ZoomToSelectionButton_clicked()
     QString currResolution;
     currResolution.sprintf("%d x %d", saveW, saveH);
     ui->ResolutionIndicator->setText(currResolution);
+    ui->ZoomToSelectionButton->setEnabled(false);
+    ui->ClearSelectionButton->setEnabled(true);
 
 }
-
 
 
 // un-crop ROI
@@ -975,7 +1022,42 @@ void MainWindow::on_ClearSelectionButton_clicked()
     videoOpen = 1;
 
     ui->ResolutionIndicator->setText("1280 x 1024");
+    ui->ZoomToSelectionButton->setEnabled(true);
+    ui->ClearSelectionButton->setEnabled(false);
 }
 
 
+// save snapshot of next frame to file
+void MainWindow::on_SnapImageButton_clicked()
+{
+    snapNextFrame = 1;
+}
 
+
+// give user dialog to select file name
+void MainWindow::on_fileNameButton_clicked()
+{
+    fileName = QFileDialog::getSaveFileName(this,
+                        tr("Select Filename to Save"),
+                        "C:/Users/Admin/Desktop/Data");
+    ui->fileNameBox->setText(fileName);
+}
+
+
+// check if file exists
+bool MainWindow::fileExists(QString path) {
+    QFileInfo checkFile(path);
+    // check if file exists and if yes: Is it really a file and no directory?
+    if (checkFile.exists() && checkFile.isFile()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+// update fileName if changed by user
+void MainWindow::on_fileNameBox_editingFinished()
+{
+    fileName = ui->fileNameBox->text();
+}
