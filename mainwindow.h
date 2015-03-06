@@ -90,6 +90,7 @@ class MainWindow : public QMainWindow
         int currHeight;
         int snapNextFrame;
         bool fileExists(QString path);
+        int cropFlag;
 
     signals:
         void setValve(int value);

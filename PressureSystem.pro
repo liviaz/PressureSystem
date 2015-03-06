@@ -25,14 +25,14 @@ include("C:/Users/Admin/Desktop/Software/PressureSystem/qextserialport-1.2rc/src
 QMAKE_CXXFLAGS += -Wall
 
 LIBS += -LC:/Users/Admin/Desktop/opencv/build/x86/vc10/lib \
-    -lopencv_core2410d \
-    -lopencv_highgui2410d \
-    -lopencv_imgproc2410d
+    -lopencv_core2410 \
+    -lopencv_highgui2410 \
+    -lopencv_imgproc2410
 
 LIBS += -LC:/Users/Admin/Desktop/opencv/build/x86/vc10/bin \
-    -lopencv_core2410d \
-    -lopencv_highgui2410d \
-    -lopencv_imgproc2410d
+    -lopencv_core2410 \
+    -lopencv_highgui2410 \
+    -lopencv_imgproc2410
 
 
 LIBS += "C:/Users/Admin/Desktop/Software/PressureSystem/FirgelliMotor/mpusbapi.lib"

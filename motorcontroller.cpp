@@ -85,7 +85,7 @@ void MotorController::goToPressure(double desiredPressure, int flag){
     int numCycles = 0;
     int maxCycles = 20;
     double accuracy = .0025;
-    int P = 15;
+    int P = 10;
     int voltageToWrite = 0;
     double motorToMove = 0;
 
@@ -112,7 +112,10 @@ void MotorController::goToPressure(double desiredPressure, int flag){
         waitUntilMoveDone(desiredPressure);
     }
 
-    if (numCycles == maxCycles){
+    // give camera some time to adjust in other thread
+    // QThread::msleep(1000);
+
+    if (numCycles == maxCycles && flag == 0){
         emit balanceFinished(0, flag);
     }
 

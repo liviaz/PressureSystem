@@ -58,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent) :
     frameMsec = 50;
     snapNextFrame = 0;
     fileName = "C:/Users/Admin/Desktop/Data/test";
+    cropFlag = 0;
 
     // timers related to measurement
     videoTimer = new QTimer(this);
@@ -575,20 +576,28 @@ void MainWindow::balanceFinished(int successful, int flag){
 // start recording video
 void MainWindow::startRecording()
 {
-    cropTimer->stop();
 
-    // change frame rate to 75 fps
-    if (MEAS_FRAME_RATE < frameRateMaximum*.95){
-        emit setCameraParams(CHANGE_FRAME_RATE, MEAS_FRAME_RATE);
-        QThread::msleep(500);
+    if (cropFlag == 0){
+
+        // change frame rate to 75 fps
+        if (MEAS_FRAME_RATE < frameRateMaximum * .9) {
+             emit setCameraParams(CHANGE_FRAME_RATE, MEAS_FRAME_RATE);
+        } else {
+            qDebug() << "error: can't achieve necessary frame rate";
+        }
+
+        cropFlag = 1;
+
     } else {
-        qDebug() << "error: can't achieve necessary frame rate";
-    }
 
-    // 4. start grabbing frames for the next 3 seconds
-    recordingVideo = 1;
-    valveOpened = 0;
-    videoTimer->start(3000);
+        cropFlag = 0;
+        cropTimer->stop();
+
+        // 4. start grabbing frames for the next 3 seconds
+        recordingVideo = 1;
+        valveOpened = 0;
+        videoTimer->start(3000);
+    }
 
 }
 
@@ -816,9 +825,8 @@ void MainWindow::cameraReadySlot(){
 
 void MainWindow::videoStarted(){
     videoOpen = 1;
+    qDebug() << "video started";
 }
-
-
 
 
 
